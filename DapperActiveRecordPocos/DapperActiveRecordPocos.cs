@@ -11,10 +11,10 @@ using System.CommandLine;
 using CodegenCS.Templating;
 
 /// <summary>
-/// SimplePocos.cs: Given a Database Schema will Generate simple POCOs (just classes and properties, no relationships)
+/// DapperActiveRecordPocos.cs: Given a Database Schema will Generate POCOs with Active-Record pattern using Dapper for Insert and Update
 ///
-/// Usage: dotnet-codegencs template run SimplePocos.cs <DbSchema.json> <Namespace> [--SingleFile] [-t <true/false>] [-k <true/false>] [-db <true/false>] [-eq <true/false>]
-/// e.g.:  dotnet-codegencs template run SimplePocos.cs AdventureWorksSchema.json MyPOCOs -db false
+/// Usage: dotnet-codegencs template run DapperActiveRecordPocos.cs <DbSchema.json> <Namespace> [-p:SingleFile] [-p:AddTableAttribute <true/false>] [-p:AddKeyAttribute <true/false>] [-p:AddKeyAttribute <true/false>] [-p:GenerateEqualsHashCode <true/false>] [-p:TrackPropertiesChange <true/false>]
+/// e.g.:  dotnet-codegencs template run DapperActiveRecordPocos.cs AdventureWorksSchema.json MyPOCOs -db false
 ///
 /// Arguments:
 ///  <Namespace>  Namespace of generated POCOs
@@ -31,14 +31,14 @@ using CodegenCS.Templating;
 ///   -eq, --GenerateEqualsHashCode          If true POCOs will have override Equals/GetHashCode and
 ///                                          equality/inequality operators (== and !=) [default: True]
 /// </summary>
-public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
+public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
 {
     private ICodegenContext _generatorContext;
     private CodegenCS.Utils.ILogger _logger;
     private bool _allTablesInSameSchema;
-    private SimplePOCOGeneratorOptions _options;
+    private DapperPOCOGeneratorOptions _options;
 
-    public SimplePOCOGenerator(CodegenCS.Utils.ILogger logger, SimplePOCOGeneratorOptions options)
+    public DapperPOCOGenerator(CodegenCS.Utils.ILogger logger, DapperPOCOGeneratorOptions options)
     {
         _logger = logger;
         _options = options;
@@ -52,10 +52,13 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         command.AddOption(new Option<bool>("-p:AddKeyAttribute", getDefaultValue: () => true) { Description = "If true will add [Key] attributes to primary-key columns.\nThis is required by FastCRUD and Entity Framework" });
         command.AddOption(new Option<bool>("-p:AddDatabaseGeneratedAttribute", getDefaultValue: () => true) { Description = "If true will add [DatabaseGenerated] attributes to identity and computed columns.\nThis is required by FastCRUD and Entity Framework" });
         command.AddOption(new Option<bool>("-p:GenerateEqualsHashCode", getDefaultValue: () => true) { Description = "If true POCOs will have override Equals/GetHashCode and equality/inequality operators (== and !=)" });
+        command.AddOption(new Option<bool>("-p:TrackPropertiesChange", getDefaultValue: () => false) { Description = "If true POCOs will implement INotifyPropertyChanged (PropertyChanged event), and will expose a HashSet of \"Dirty\" properties and bool IsDirty" });
+        command.AddOption(new Option<bool>("-p:GenerateConnectionFactory", getDefaultValue: () => true) { Description = "If true (default) will create IDbConnectionFactory file" });
     }
 
-    #region SimplePOCOGeneratorOptions
-    public class SimplePOCOGeneratorOptions : IAutoBindCommandLineArgs
+
+    #region DapperPOCOGeneratorOptions
+    public class DapperPOCOGeneratorOptions : IAutoBindCommandLineArgs
     {
         /// <summary>
         /// Namespace of generated POCOs
@@ -88,15 +91,30 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         /// If true (default is true) POCOs will have override Equals/GetHashCode and equality/inequality operators (== and !=)
         /// </summary>
         public bool GenerateEqualsHashCode { get; set; } = true;
+        
+        /// <summary>
+        /// If true (default is false), POCOs will implement INotifyPropertyChanged (PropertyChanged event), and will expose a HashSet of "Dirty" properties and bool IsDirty
+        /// </summary>
+        public bool TrackPropertiesChange { get; set; } = false;
+        
+        /// <summary>
+        /// If true (default is true) will create IDbConnectionFactory file (Active Record CRUD need a IDbConnection factory (since POCOs don't hold references to connections)
+        /// </summary>
+        public bool GenerateConnectionFactory { get; set; } = true;
+        
     }
-    #endregion /SimplePOCOGeneratorOptions
+    #endregion /DapperPOCOGeneratorOptions
+
 
     public void Render(ICodegenContext context, DatabaseSchema schema)
     {
         _generatorContext = context;
         _allTablesInSameSchema = schema.Tables.Select(t => t.TableSchema).Distinct().Count() == 1;
         GeneratePOCOs(schema);
+        if (_options.GenerateConnectionFactory)
+            GenerateConnectionFactory(_generatorContext["IDbConnectionFactory.cs"]);
     }
+
 
     /// <summary>
     /// Generates POCOS
@@ -122,7 +140,9 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             using System.Collections.Generic;
             using System.ComponentModel.DataAnnotations;
             using System.ComponentModel.DataAnnotations.Schema;
-            using System.Linq;
+            using System.Linq;{{IF(_options.TrackPropertiesChange)}}
+            using System.ComponentModel;{{ENDIF}}
+            using Dapper;
 
             namespace {{_options.Namespace}}
             {
@@ -158,7 +178,9 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
                 using System.Collections.Generic;
                 using System.ComponentModel.DataAnnotations;
                 using System.ComponentModel.DataAnnotations.Schema;
-                using System.Linq;
+                using System.Linq;{{IF(_options.TrackPropertiesChange)}}
+                using System.ComponentModel;{{ENDIF}}
+                using Dapper;
 
                 namespace {{_options.Namespace}}
                 {
@@ -187,6 +209,8 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         }
 
         List<string> baseClasses = new List<string>();
+        if (_options.TrackPropertiesChange)
+            baseClasses.Add("INotifyPropertyChanged");
 
         var columns = table.Columns
             .Where(c => ShouldProcessColumn(table, c))
@@ -203,6 +227,17 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
                 #endregion Members
                 """);
 
+            if (table.TableType == "TABLE" && columns.Any(c => c.IsPrimaryKeyMember))
+            {
+                file.WriteLine($$"""
+
+                #region ActiveRecord
+                {{GenerateCrudSave(table)}}
+                {{GenerateCrudInsert(table)}}
+                {{GenerateCrudUpdate(table)}}
+                #endregion ActiveRecord
+                """);
+            }
             if (_options.GenerateEqualsHashCode)
             {
                 file.WriteLine($$"""
@@ -214,6 +249,35 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
                 #endregion Equals/GetHashCode
                 """);
             }
+
+            if (_options.TrackPropertiesChange)
+            {
+                file.WriteLine($$"""
+
+                #region INotifyPropertyChanged/IsDirty
+                public HashSet<string> ChangedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                public void MarkAsClean()
+                {
+                    ChangedProperties.Clear();
+                }
+                public virtual bool IsDirty => ChangedProperties.Any();
+
+                public event PropertyChangedEventHandler PropertyChanged;
+                protected void SetField<T>(ref T field, T value, string propertyName) {
+                    if (!EqualityComparer<T>.Default.Equals(field, value)) {
+                        field = value;
+                        ChangedProperties.Add(propertyName);
+                        OnPropertyChanged(propertyName);
+                    }
+                }
+                protected virtual void OnPropertyChanged(string propertyName) {
+                    if (PropertyChanged != null) {
+                        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                    }
+                }
+                #endregion INotifyPropertyChanged/IsDirty
+                """);
+            }
         });
     }
 
@@ -222,6 +286,8 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         string propertyName = GetPropertyNameForDatabaseColumn(table, column.ColumnName);
         string privateVariable = $"_{propertyName.Substring(0, 1).ToLower()}{propertyName.Substring(1)}";
 
+        if (_options.TrackPropertiesChange)
+            writer.WriteLine($"private {GetTypeDefinitionForDatabaseColumn(table, column) ?? ""} {privateVariable};");
         if (column.IsPrimaryKeyMember && _options.AddKeyAttribute)
             writer.WriteLine("[Key]");
         if (column.IsIdentity && _options.AddDatabaseGeneratedAttribute)
@@ -232,7 +298,15 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         // We'll decorate [Column("Name")] only if column name doesn't match property name
         if (propertyName.ToLower() != column.ColumnName.ToLower())
             writer.WriteLine($"[Column(\"{column.ColumnName}\")]");
-        writer.Write($"public {GetTypeDefinitionForDatabaseColumn(table, column) ?? ""} {propertyName} {{ get; set; }}");
+        if (_options.TrackPropertiesChange)
+            writer.Write($@"
+        public {GetTypeDefinitionForDatabaseColumn(table, column) ?? ""} {propertyName} 
+        {{ 
+            get {{ return {privateVariable}; }} 
+            set {{ SetField(ref {privateVariable}, value, nameof({propertyName})); }} 
+        }}");
+        else
+            writer.Write($"public {GetTypeDefinitionForDatabaseColumn(table, column) ?? ""} {propertyName} {{ get; set; }}");
     }
 
     private FormattableString GenerateEquals(Table table)
@@ -268,6 +342,7 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             }
             """;
     }
+    
     private FormattableString GenerateGetHashCode(Table table)
     {
         var cols = table.Columns
@@ -289,6 +364,7 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             }
             """;
     }
+    
     private FormattableString GenerateInequalityOperatorOverloads(Table table)
     {
         string entityClassName = GetClassNameForTable(table);
@@ -502,5 +578,124 @@ public class SimplePOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         (?<=[A-Z])(?=[A-Z][a-z0-9]) |
             (?<=[^A-Z])(?=[A-Z]) |
             (?<=[A-Za-z0-9])(?=[^A-Za-z0-9])", RegexOptions.IgnorePatternWhitespace);
+
+
+    private FormattableString GenerateCrudSave(Table table)
+    {
+        var pkCols = table.Columns
+            .Where(c => ShouldProcessColumn(table, c))
+            .Where(c => c.IsPrimaryKeyMember).OrderBy(c => c.OrdinalPosition)
+            .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName), DefaultTypeValue = GetDefaultValue(GetTypeForDatabaseColumn(table, c)) }); ;
+        var pkHasNoValue = string.Join(" && ", pkCols.Select(col => col.PropertyName + " == " + col.DefaultTypeValue));
+
+        return $$"""
+            public void Save()
+            {
+                if ({{pkHasNoValue}})
+                    Insert();
+                else
+                    Update();
+            }
+            """;
+    }
+
+    private FormattableString GenerateCrudInsert(Table table)
+    {
+        var cols = table.Columns
+            .Where(c => ShouldProcessColumn(table, c))
+            .Where(c => !c.IsIdentity)
+            .Where(c => !c.IsRowGuid) //TODO: should be used only if they have value set (not default value)
+            .Where(c => !c.IsComputed) //TODO: should be used only if they have value set (not default value)
+            .OrderBy(c => GetPropertyNameForDatabaseColumn(table, c.ColumnName));
+
+        var identityCol = table.Columns
+            .Where(c => ShouldProcessColumn(table, c))
+            .Where(c => c.IsIdentity).FirstOrDefault();
+
+        return $$"""
+        public virtual void Insert()
+        {
+            using (var conn = IDbConnectionFactory.CreateConnection())
+            {
+                string cmd = @"
+                    INSERT INTO {{(table.TableSchema == "dbo" ? $"[{table.TableName}]" : $"[{table.TableSchema}].[{table.TableName}]")}}
+                    (
+                        {{cols.Select(col => "[" + col.ColumnName + "]").Render(RenderEnumerableOptions.MultiLineCSV)}}
+                    )
+                    VALUES
+                    (
+                        {{cols.Select(col => "@" + GetPropertyNameForDatabaseColumn(table, col.ColumnName)).Render(RenderEnumerableOptions.MultiLineCSV)}}
+                    )";
+                {{IIF(identityCol != null,
+                        () => $$"""this.{{() => GetPropertyNameForDatabaseColumn(table, identityCol?.ColumnName)}} = conn.Query<{{GetTypeDefinitionForDatabaseColumn(table, identityCol)}}>(cmd + "SELECT SCOPE_IDENTITY();", this).Single();""",
+                        () => $$"""conn.Execute(cmd, this);"""
+                    )}}{{IF(_options.TrackPropertiesChange)}}
+
+                this.MarkAsClean();{{ENDIF}}
+            }
+        }
+        """;
+    }
+
+    private FormattableString GenerateCrudUpdate(Table table)
+    {
+        var cols = table.Columns
+            .Where(c => ShouldProcessColumn(table, c))
+            .Where(c => !c.IsIdentity)
+            .Where(c => !c.IsRowGuid) //TODO: should be used only if they have value set (not default value)
+            .Where(c => !c.IsComputed) //TODO: should be used only if they have value set (not default value)
+            .OrderBy(c => GetPropertyNameForDatabaseColumn(table, c.ColumnName))
+            .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName) });
+
+        var pkCols = table.Columns
+            .Where(c => ShouldProcessColumn(table, c))
+            .Where(c => c.IsPrimaryKeyMember)
+            .OrderBy(c => c.OrdinalPosition)
+            .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName) });
+
+        return $$"""
+            public virtual void Update()
+            {
+                using (var conn = IDbConnectionFactory.CreateConnection())
+                {
+                    string cmd = @"
+                        UPDATE {{(table.TableSchema == "dbo" ? $"[{table.TableName}]" : $"[{table.TableSchema}].[{table.TableName}]")}} SET
+                            {{cols.Select(col => $"[{col.ColumnName}] = @{col.PropertyName}").Render(RenderEnumerableOptions.MultiLineCSV)}}
+                        WHERE
+                            {{pkCols.Select(col => $"[{col.ColumnName}] = @{col.PropertyName}").Render(RenderEnumerableOptions.CreateWithCustomSeparator(" AND\n", false))}}";
+                    conn.Execute(cmd, this);{{IF(_options.TrackPropertiesChange)}}
+                    
+                    this.MarkAsClean();{{ENDIF}}
+                }
+            }
+            """;
+    }
+
+
+    private void GenerateConnectionFactory(ICodegenOutputFile file)
+    {
+        file.WriteLine($$"""
+                using System;
+                using System.Data;
+                using System.Data.SqlClient;
+
+                namespace {{_options.Namespace}}
+                {
+                    public class IDbConnectionFactory
+                    {
+                        public static IDbConnection CreateConnection()
+                        {
+                            string connectionString = @"Data Source=MYWORKSTATION\\SQLEXPRESS;
+                                            Initial Catalog=AdventureWorks;
+                                            Integrated Security=True;";
+
+                            return new SqlConnection(connectionString);
+                        }
+                    }
+                }
+                """);
+    }
+
+
 
 }
