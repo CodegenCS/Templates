@@ -1,4 +1,12 @@
-**CodegenCS is a Toolkit for doing Code Generation using plain C#**. For an overview of all CodegenCS components and tools check out the [Main Project Page](https://github.com/CodegenCS/CodegenCS/).
+**CodegenCS is a Toolkit for doing Code Generation using plain C#**.
+
+Before anything else, don't forget to read read the [Main Project Page](https://github.com/CodegenCS/CodegenCS/) to learn the basics (basic idea, basic features, and major components).
+
+This page is only about **CodegenCS Sample Templates**:
+- If you are **writing a template** (code generator) and want to learn more about CodegenCS features (and internals) then check out the [CodegenCS Core Library](https://github.com/CodegenCS/CodegenCS/tree/master/src/Core/CodegenCS) documentation.
+- If you want to **compile and run templates** or **reverse-engineer a database schema** check out the [`dotnet-codegencs documentation`](https://github.com/CodegenCS/CodegenCS/tree/master/src/dotnet-codegencs)
+- If you want to **browse the sample templates** (POCO Generators, DAL generators, etc) this is the right place.
+
 
 # CodegenCS Templates
 

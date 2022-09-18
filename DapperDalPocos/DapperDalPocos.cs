@@ -8,7 +8,7 @@ using static CodegenCS.Symbols;
 using static InterpolatedColorConsole.Symbols;
 using System.CommandLine.Binding;
 using System.CommandLine;
-using CodegenCS.Templating;
+using CodegenCS.Utils;
 
 /// <summary>
 /// DapperDalPocos.cs: Given a Database Schema will Generate POCOs with a Data Access Layer class (DAL) using Dapper

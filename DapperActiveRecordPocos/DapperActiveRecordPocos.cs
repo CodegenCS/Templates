@@ -8,7 +8,7 @@ using static CodegenCS.Symbols;
 using static InterpolatedColorConsole.Symbols;
 using System.CommandLine.Binding;
 using System.CommandLine;
-using CodegenCS.Templating;
+using CodegenCS.Utils;
 
 /// <summary>
 /// DapperActiveRecordPocos.cs: Given a Database Schema will Generate POCOs with Active-Record pattern using Dapper for Insert and Update
