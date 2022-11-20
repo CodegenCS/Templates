@@ -1,5 +1,8 @@
-﻿using CodegenCS;
-using CodegenCS.DbSchema;
+﻿// THIS FILE IS HERE ONLY FOR LEGACY PURPOSES.
+// PLEASE CHECK NEW VERSION AT /DatabaseSchema/ folder.
+
+using CodegenCS;
+using CodegenCS.Models.DbSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +12,7 @@ using static InterpolatedColorConsole.Symbols;
 using System.CommandLine.Binding;
 using System.CommandLine;
 using CodegenCS.Utils;
+using CodegenCS.Runtime;
 
 /// <summary>
 /// DapperExtensionPocos.cs: Given a Database Schema will Generate POCOs with extensions-methods for Insert and Update using Dapper
@@ -34,11 +38,13 @@ using CodegenCS.Utils;
 public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
 {
     private ICodegenContext _generatorContext;
-    private CodegenCS.Utils.ILogger _logger;
+    private ILogger _logger;
     private bool _allTablesInSameSchema;
+    private bool _duplicatedTableNames;
+    private Dictionary<Table, Dictionary<string, string>> _tablePropertyNames { get; set; } = new Dictionary<Table, Dictionary<string, string>>();
     private DapperPOCOGeneratorOptions _options;
 
-    public DapperPOCOGenerator(CodegenCS.Utils.ILogger logger, DapperPOCOGeneratorOptions options)
+    public DapperPOCOGenerator(ILogger logger, DapperPOCOGeneratorOptions options)
     {
         _logger = logger;
         _options = options;
@@ -114,32 +120,6 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         /// If true (default is false), POCOs will implement INotifyPropertyChanged (PropertyChanged event), and will expose a HashSet of "Dirty" properties and bool IsDirty
         /// </summary>
         public bool TrackPropertiesChange { get; set; } = false;
-        
-
-        #region CRUD Extension Methods
-        /// <summary>
-        /// If defined (not null), will generate a static class with CRUD extension-methods for all POCOs
-        /// </summary>
-        public CRUDExtensionOptions CRUDExtensionSettings { get; set; } = null;
-        public class CRUDExtensionOptions
-        {
-            /// <summary>
-            /// If not defined will be the same as POCOs <see cref="Namespace"/>
-            /// </summary>
-            public string Namespace { get; set; }
-
-            /// <summary>
-            /// This is the filepath where the template generates CRUD extensions.
-            /// By default it's named CRUDExtensions.cs
-            /// </summary>
-            public string FileName { get; set; } = "CRUDExtensions.cs";
-
-            /// <summary>
-            /// Class Name
-            /// </summary>
-            public string ClassName { get; set; } = "CRUDExtensions";
-        }
-        #endregion
     }
     #endregion /DapperPOCOGeneratorOptions
 
@@ -148,6 +128,9 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
     {
         _generatorContext = context;
         _allTablesInSameSchema = schema.Tables.Select(t => t.TableSchema).Distinct().Count() == 1;
+        _duplicatedTableNames = schema.Tables.Select(t => t.TableName).GroupBy(name => name).Where(g => g.Count() > 1).Any();
+        if (_duplicatedTableNames)
+            _logger.WriteLineAsync(ConsoleColor.Yellow, $"Warning: There are tables with same name (in different schemas?), class names will contain schema...");
         GeneratePOCOs(schema);
         _logger.WriteLineAsync($"Generating CRUD Extensions {ConsoleColor.Yellow}'{_options.CrudFile}'{PREVIOUS_COLOR}...");
         GenerateCRUD(_generatorContext[_options.CrudFile], schema);
@@ -409,19 +392,19 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
     private string GetFileNameForTable(Table table)
     {
         //return $"{table.TableName}.generated.cs";
-        // default schema or all tables under a single schema - just omit the schema:
-        if (table.TableSchema == "dbo" || _allTablesInSameSchema)
+        // if all tables are under single schema or if it's default schema - just omit the schema:
+        if (_allTablesInSameSchema || table.TableSchema == "dbo")
             return $"{table.TableName}.generated.cs";
         else
             return $"{table.TableSchema}.{table.TableName}.generated.cs";
     }
     private string GetClassNameForTable(Table table)
     {
-        return $"{table.TableName}";
-        if (table.TableSchema == "dbo")
-            return $"{table.TableName}";
-        else
+        // if there are tables under multiple schemas and yet they have identical names - then each class should have unique name:
+        if (!_allTablesInSameSchema && _duplicatedTableNames)
             return $"{table.TableSchema}_{table.TableName}";
+        else
+        return $"{table.TableName}";
     }
     private bool ShouldProcessTable(Table table)
     {
@@ -556,6 +539,10 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
     {
         if (columnName == null)
             return null;
+
+        if (_tablePropertyNames.ContainsKey(table) && _tablePropertyNames[table].ContainsKey(columnName))
+            return _tablePropertyNames[table][columnName];
+
         string name = columnName;
 
         // Replace forbidden characters
@@ -593,7 +580,19 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         if (cs_keywords.Contains(name))
             name = "@" + name;
 
-        return name;
+        // check for name clashes
+        if (!_tablePropertyNames.ContainsKey(table))
+            _tablePropertyNames[table] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        int n = 0;
+        string attemptName = name;
+        while ((GetClassNameForTable(table) == attemptName || _tablePropertyNames[table].ContainsValue((attemptName))) && n < 100)
+        {
+            n++;
+            attemptName = name + n.ToString();
+        }
+        _tablePropertyNames[table].Add(columnName, attemptName);
+
+        return attemptName;
     }
 
     // Splits both camelCaseWords and also TitleCaseWords. Underscores and dashes are also splitted. Uppercase acronyms are also splitted.
@@ -655,6 +654,8 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             .Where(c => ShouldProcessColumn(table, c))
             .Where(c => c.IsPrimaryKeyMember).OrderBy(c => c.OrdinalPosition)
             .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName), DefaultTypeValue = GetDefaultValue(GetTypeForDatabaseColumn(table, c)) }); ;
+        if (!pkCols.Any())
+            return $"";
         var pkHasNoValue = string.Join(" && ", pkCols.Select(col => "e." + col.PropertyName + " == " + col.DefaultTypeValue));
 
         return $$"""

@@ -19,13 +19,17 @@ To learn more about how to modify the templates (and learn how to write clean an
 
 # DatabaseSchema templates
 
-[SimplePocos](./SimplePocos/SimplePocos.cs): Generates one POCO for each table. Can add attributes like [Table], [Key], [DatabaseGenerated], can override Equals() and GetHashCode(). Can generate all POCOs in a single file or each POCO in its own file
+[DatabaseSchema](https://github.com/CodegenCS/CodegenCS/tree/master/src/Models/CodegenCS.DbSchema/DbSchema) is our out-of-the-box template that represents the **schema of a relational database**.  
 
-[DapperExtensionPocos](./DapperExtensionPocos/DapperExtensionPocos.cs): Same as [SimplePocos](./SimplePocos/SimplePocos.cs), but will also generate CRUD extension methods (Insert/Update) using Dapper.
+Currently it has tools to extract the model from a Microsoft SQL Server (MSSQL) or PostgreSQL.
 
-[DapperDalPocos](./DapperDalPocos/DapperDalPocos.cs): Same as [SimplePocos](./SimplePocos/SimplePocos.cs), but will also generate a Data Access Layer class with CRUD methods (Insert/Update) using Dapper.
+Check out the [available DatabaseSchema Templates](./DatabaseSchema) which generate output based on a database schema.
 
-[DapperActiveRecordPocos](./DapperActiveRecordPocos/DapperActiveRecordPocos.cs): Same as [SimplePocos](./SimplePocos/SimplePocos.cs), but will also generate Active Record pattern (Insert/Update methods inside the POCO) using Dapper.
+# OpenAPI templates
+
+[OpenAPI (Swagger) templates](https://github.com/CodegenCS/CodegenCS/tree/master/src/Models/CodegenCS.Models.NSwagAdapter) are read [using NSwag](https://github.com/RicoSuter/NSwag/) and can be used to generate templates based on OpenAPI (REST API) model.
+
+Check out the [available OpenAPI Templates](./OpenAPI) which generate output based on a OpenAPI (Swagger) model.
 
 
 # License

@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CodegenCS.Core" Version="3.1.2" />
+		<PackageReference Include="CodegenCS.Models.DbSchema" Version="3.0.0" />
+		<PackageReference Include="CodegenCS.Runtime" Version="3.1.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+	<!-- Yeah, SampleUsage project is a subfolder - just ignore it -->
+	<ItemGroup>
+		<Compile Remove="SampleUsage\**" />
+		<EmbeddedResource Remove="SampleUsage\**" />
+		<None Remove="SampleUsage\**" />
+	</ItemGroup>
+
+	<!-- In DEBUG mode we won't try to build the generated files (to avoid breaking the template build) -->
+	<Choose>
+		<When Condition="'$(Configuration)' == 'Debug'">
+			<ItemGroup>
+				<Compile Remove="**\*.generated.cs" />
+				<Content Include="**\*.generated.cs" />
+				<Content Remove="bin\**\*.generated.cs" />
+				<Compile Remove="Output\**\*.cs" />
+				<Content Include="Output\**\*.cs" />
+			</ItemGroup>
+		</When>
+		<Otherwise>
+		</Otherwise>
+	</Choose>
+
+
+</Project>
