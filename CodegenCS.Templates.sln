@@ -17,6 +17,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenAPI", "OpenAPI", "{01C9
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSwagClient", "OpenAPI\NSwagClient\NSwagClient.csproj", "{D09685BB-C797-4369-9198-51BAD1D54645}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleModels", "SampleModels", "{C0E3DC9E-73B1-435C-A0AD-421A119D1B36}"
+	ProjectSection(SolutionItems) = preProject
+		OpenAPI\SampleModels\petstore-openapi3.json = OpenAPI\SampleModels\petstore-openapi3.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleModels", "SampleModels", "{9A6564FC-0687-494D-ACF7-98C17B00647E}"
+	ProjectSection(SolutionItems) = preProject
+		DatabaseSchema\SampleModels\AdventureWorksSchema.json = DatabaseSchema\SampleModels\AdventureWorksSchema.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +63,8 @@ Global
 		{935C2136-B59E-43ED-933E-F154B4187CE8} = {28104C6E-3786-478A-A038-B6F08D58433C}
 		{226EB032-B52C-4CCF-B4DC-3A523B6118DD} = {28104C6E-3786-478A-A038-B6F08D58433C}
 		{D09685BB-C797-4369-9198-51BAD1D54645} = {01C993D0-1068-43F9-A340-59BD9068139B}
+		{C0E3DC9E-73B1-435C-A0AD-421A119D1B36} = {01C993D0-1068-43F9-A340-59BD9068139B}
+		{9A6564FC-0687-494D-ACF7-98C17B00647E} = {28104C6E-3786-478A-A038-B6F08D58433C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {94A75B87-22BA-48EA-8EDC-E105B4AA97F6}

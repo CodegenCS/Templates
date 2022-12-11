@@ -6,7 +6,7 @@ This page is only about **CodegenCS Sample Templates based on OpenAPI (Swagger) 
 
 # [NSwagClient](./NSwagClient/NSwagClient.cs)
 
-Work in progress. Should generate API client similar to [NSwag CSharpClientGenerator](https://github.com/RicoSuter/NSwag/wiki/CSharpClientGenerator).
+Generates an API client similar to [NSwag CSharpClientGenerator](https://github.com/RicoSuter/NSwag/wiki/CSharpClientGenerator).
 
 <!-- Other possible benchmarks are [swagger.io (swagger-codegen)](https://github.com/swagger-api/swagger-codegen) ([C#](https://github.com/swagger-api/swagger-codegen/blob/master/modules/swagger-codegen/src/main/java/io/swagger/codegen/languages/CSharpClientCodegen.java)), [autorest](https://github.com/Azure/autorest) or [autorest.csharp](https://github.com/Azure/autorest.csharp).
  -->
