@@ -21,7 +21,7 @@ To learn more about how to modify the templates (and learn how to write clean an
 
 [DatabaseSchema](https://github.com/CodegenCS/CodegenCS/tree/master/src/Models/CodegenCS.DbSchema/DbSchema) is our out-of-the-box template that represents the **schema of a relational database**.  
 
-Currently it has tools to extract the model from a Microsoft SQL Server (MSSQL) or PostgreSQL.
+[CLI Tool (dotnet-codegencs)](https://github.com/CodegenCS/CodegenCS/tree/master/src/Tools/dotnet-codegencs) can be used to extract the model from a Microsoft SQL Server (MSSQL) or PostgreSQL.
 
 Check out the [available DatabaseSchema Templates](./DatabaseSchema) which generate output based on a database schema.
 

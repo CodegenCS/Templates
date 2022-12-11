@@ -1,0 +1,45 @@
+{
+    "SimplePocos":
+    {
+        "Description": [
+            "Generates one POCO for each table.",
+            "Can add attributes like [Table], [Key], [DatabaseGenerated]",
+            "Can override Equals() and GetHashCode()",
+            "Can generate all POCOs in a single file or each POCO in its own file",
+        ],
+        "ModelType": ["DatabaseSchema"],
+        "Uri": "/DatabaseSchema/SimplePocos/SimplePocos.cs",
+    },
+    "DapperExtensionPocos":
+    {
+        "Description": [
+            "GSame as SimplePocos, but will also generate CRUD static extension methods (Insert/Update) using Dapper.",
+        ],
+        "ModelType": ["DatabaseSchema"],
+        "Uri": "/DatabaseSchema/DapperExtensionPocos/DapperExtensionPocos.cs",
+    },
+    "DapperDalPocos":
+    {
+        "Description": [
+            "Same as SimplePocos, but will also generate a Data Access Layer class with CRUD methods (Insert/Update) using Dapper.",
+        ],
+        "ModelType": ["DatabaseSchema"],
+        "Uri": "/DatabaseSchema/DapperDalPocos/DapperDalPocos.cs",
+    },
+    "DapperActiveRecordPocos":
+    {
+        "Description": [
+            "Same as SimplePocos, but will also generate CRUD using Active Record pattern (Insert/Update methods inside the POCO) using Dapper.",
+        ],
+        "ModelType": ["DatabaseSchema"],
+        "Uri": "/DatabaseSchema/DapperActiveRecordPocos/DapperActiveRecordPocos.cs",
+    },
+    "NSwagClient":
+    {
+        "Description": [
+            "Generates an API client similar to NSwag CSharpClientGenerator.",
+        ],
+        "ModelType": ["OpenAPI"],
+        "Uri": "/OpenAPI/NSwagClient/NSwagClient.cs",
+    },
+}
