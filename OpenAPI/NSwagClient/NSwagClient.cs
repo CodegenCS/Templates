@@ -9,13 +9,21 @@ using CodegenCS.Runtime;
 using static CodegenCS.Symbols;
 using System.Globalization;
 using System.Text;
-using System.Web;
 using System.Security;
-using System.Net.Mime;
-using System.Xml.Linq;
+using System.CommandLine;
 
 namespace NSwagClient;
 
+/// <summary>
+/// NSwagClient.cs: Given an OpenAPI model (Swagger) will Generate REST Client (entities and web api calls)
+///
+/// Usage: dotnet-codegencs template run NSwagClient.cs <OpenApiDocument.json> <Namespace>
+/// e.g.:  dotnet-codegencs template run NSwagClient.cs petstore-openapi3.json PetstoreClient
+///
+/// Arguments:
+///  <Namespace>  Namespace of generated POCOs
+///
+/// </summary>
 public class NSwagClient
 {
     #region Members
@@ -37,6 +45,10 @@ public class NSwagClient
         /// Namespace of generated Client
         /// </summary>
         public string Namespace { get; set; } = "MyProject.NSwagClients";
+    }
+    public static void ConfigureCommand(Command command)
+    {
+        command.AddArgument(new Argument<string>("Namespace", "Namespace of generated Client") { Arity = ArgumentArity.ExactlyOne });
     }
     #endregion
 
@@ -147,12 +159,20 @@ public class NSwagClient
         model.Definitions.OrderBy(def => def.Value.IsArray ? 1 : 0).ToList().ForEach(def =>
         {
             // Map schemas, giving a class name to each one, and mapping array-schemas to the respective underlying array-type
-            _typeDefinitions.Add(def.Value, new TypeDefinition()
+            var typeDef = new TypeDefinition() { Name = def.Key };
+            if (def.Value.IsArray && def.Value.Item.Reference != null) //TODO: support for 
+                typeDef.TypeName = $"System.Collections.Generic.ICollection<{_typeDefinitions[def.Value.Item.Reference].Name}>";
+            else if (def.Value.IsArray)
             {
-                Name = def.Key,
-                TypeName = def.Value.IsArray ? $"System.Collections.Generic.ICollection<{_typeDefinitions[def.Value.Item.Reference].Name}>" : def.Key
-            });
-            _typeDefinitions[def.Value].TypeAlias = GetTypeAlias(_typeDefinitions[def.Value].TypeName);
+                //TODO: type is not declared... I guess we have to enumerate through def.Value.Item.Reference
+            }
+            else
+                typeDef.TypeName = def.Key;
+            if (_typeDefinitions.ContainsKey(def.Value))
+                typeDef.TypeAlias = GetTypeAlias(_typeDefinitions[def.Value].TypeName);
+
+
+            _typeDefinitions.Add(def.Value, typeDef);
         });
         model.Operations.ToList().ForEach(op =>
         {
@@ -633,7 +653,7 @@ public class NSwagClient
         if (prop.IsArray && prop.Item != null)
             return "System.Collections.Generic.IEnumerable<" + GetType(prop.Item.Type, prop.Item.Format, prop.Name) + ">";
         if (prop.IsArray && prop.Reference != null)
-            return "System.Collections.Generic.IEnumerable<" + GetType(prop.Item.Type, prop.Item.Format, prop.Name) + ">";
+            return "System.Collections.Generic.IEnumerable<" + GetType(prop.Reference.Type, prop.Reference.Format, prop.Name) + ">";
 
         string type = GetType(prop.Type, prop.Format, prop.Name);
         if (type != "string" && type != "object" && !type.StartsWith("System.Collections.Generic.IEnumerable<") && prop.IsNullableRaw == true )
@@ -644,6 +664,8 @@ public class NSwagClient
 
     static string GetType(OpenApiParameter parameter)
     {
+        if (parameter.Schema == null) // TODO: how's that?
+            return null;
         string type;
         if (parameter.Schema.Reference != null && _typeDefinitions.ContainsKey(parameter.Schema.Reference))
         {
@@ -654,7 +676,7 @@ public class NSwagClient
         else if (parameter.Schema.IsArray && parameter.Schema.Item != null)
             type = "System.Collections.Generic.IEnumerable<" + GetType(parameter.Schema.Item.Type, parameter.Schema.Item.Format, parameter.Name) + ">";
         else if (parameter.Schema.IsArray && parameter.Schema.Reference != null)
-            type = "System.Collections.Generic.IEnumerable<" + GetType(parameter.Schema.Item.Type, parameter.Schema.Item.Format, parameter.Name) + ">";
+            type = "System.Collections.Generic.IEnumerable<" + GetType(parameter.Schema.Reference.Type, parameter.Schema.Reference.Format, parameter.Name) + ">";
         else
             type = GetType(parameter.Schema.Type, parameter.Schema.Format, parameter.Name);
         if (type != "string" && type != "object" && !type.StartsWith("System.Collections.Generic.IEnumerable<") && !parameter.IsRequired)
@@ -744,7 +766,7 @@ public class NSwagClient
             else if (responseSchema.IsArray && responseSchema.Item != null)
                 type = "System.Collections.Generic.IEnumerable<" + GetType(responseSchema.Item.Type, responseSchema.Item.Format, null) + ">";
             else if (responseSchema.IsArray && responseSchema.Reference != null)
-                type = "System.Collections.Generic.IEnumerable<" + GetType(responseSchema.Item.Type, responseSchema.Item.Format, null) + ">";
+                type = "System.Collections.Generic.IEnumerable<" + GetType(responseSchema.Reference.Type, responseSchema.Reference.Format, null) + ">";
             else
                 type = GetType(responseSchema.Type, responseSchema.Format, null);
             //if (type != "string" && type != "object" && !type.StartsWith("System.Collections.Generic.IEnumerable<"))
