@@ -32,6 +32,7 @@ internal class MyTemplate
         var ctx = new CodegenContext();
 
         var template = new NSwagClient();
+        ctx.DefaultOutputFile.RelativePath = new FileInfo(modelPath).Name.Replace(".json",".cs");
 
         // The method below is the Template entrypoint. CLI Tool (dotnet-codegencs) would start from this method (and do the rest)
         template.TemplateMain(ctx, model, new NSwagClient.NSwagClientOptions() { Namespace = "MyProject.NSwagClients" });
