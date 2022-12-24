@@ -204,7 +204,7 @@ public class NSwagClient
         if (_types.ContainsKey(schema) && !isComponentSchemaRegistration)
             return _types[schema];
 
-        string schemaName = suggestedTypeName == null ? null : FirstLetterToUpper(string.Join("", suggestedTypeName.Replace("/", "").Split("-").Select(p => FirstLetterToUpper(p))));
+        string schemaName = suggestedTypeName == null ? null : FirstLetterToUpper(string.Join("", suggestedTypeName.Replace("/", "").Split('-').Select(p => FirstLetterToUpper(p))));
         var typeDef = new TypeDefinition() { SchemaName = schemaName, JsonSchema = schema };
 
         if (schema.IsArray)
@@ -823,7 +823,7 @@ public class NSwagClient
             if (name.Contains("/"))
                 name = name.Substring(name.LastIndexOf("/") + 1);
         }
-        name = string.Join("", name.Replace("/", "_").Split("-").Select(p => FirstLetterToUpper(p)));
+        name = string.Join("", name.Replace("/", "_").Split('-').Select(p => FirstLetterToUpper(p)));
         return name;
     }
     static string EscapeXmlComments(string text)
@@ -831,7 +831,7 @@ public class NSwagClient
         if (string.IsNullOrEmpty(text))
             return text;
         text = SecurityElement.Escape(text).Replace("&quot;", "\"").Replace("&apos;", "'"); // is there any better way to escape for xmldoc?
-        return string.Join("\r\n<br/>", text.Split('\r', '\n', StringSplitOptions.RemoveEmptyEntries).Select(t => t.TrimEnd('\r', '\n').TrimStart('\r', '\n')));
+        return string.Join("\r\n<br/>", text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.TrimEnd('\r', '\n').TrimStart('\r', '\n')));
     }
     static string GetTypeAlias(string fullType)
     {
