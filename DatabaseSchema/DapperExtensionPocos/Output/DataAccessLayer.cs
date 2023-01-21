@@ -24,17 +24,39 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveAddress(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.AddressId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertAddress(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateAddress(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveAddress_by_rowguid(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertAddress(e, transaction, commandTimeout);
+            else
+                conn.UpdateAddress_by_rowguid(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveAddress_by_AddressLine1_AddressLine2_City_StateProvinceID_PostalCode(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.AddressLine1 == null && e.AddressLine2 == null && e.City == null && e.StateProvinceId == default(int) && e.PostalCode == null)
+                conn.InsertAddress(e, transaction, commandTimeout);
+            else
+                conn.UpdateAddress_by_AddressLine1_AddressLine2_City_StateProvinceID_PostalCode(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertAddress(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[Address]
@@ -60,7 +82,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateAddress(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[Address] SET
@@ -74,23 +96,109 @@ namespace MyNamespace.Crud
                     [AddressID] = @AddressId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateAddress_by_rowguid(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[Address] SET
+                    [AddressLine1] = @AddressLine1,
+                    [AddressLine2] = @AddressLine2,
+                    [City] = @City,
+                    [ModifiedDate] = @ModifiedDate,
+                    [PostalCode] = @PostalCode,
+                    [StateProvinceID] = @StateProvinceId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateAddress_by_AddressLine1_AddressLine2_City_StateProvinceID_PostalCode(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[Address] SET
+                    [AddressLine1] = @AddressLine1,
+                    [AddressLine2] = @AddressLine2,
+                    [City] = @City,
+                    [ModifiedDate] = @ModifiedDate,
+                    [PostalCode] = @PostalCode,
+                    [StateProvinceID] = @StateProvinceId
+                WHERE
+                    [AddressLine1] = @AddressLine1 AND
+                    [AddressLine2] = @AddressLine2 AND
+                    [City] = @City AND
+                    [StateProvinceID] = @StateProvinceId AND
+                    [PostalCode] = @PostalCode";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteAddress(this IDbConnection conn, Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[Address]
+                WHERE
+                    [AddressID] = @AddressId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteAddress(this IDbConnection conn, int AddressId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[Address]
+                WHERE
+                    [AddressID] = @AddressId";
+            int deleted = conn.Execute(cmd, new { AddressId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Address
 
         #region AddressType
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveAddressType(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.AddressTypeId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertAddressType(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateAddressType(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveAddressType_by_Name(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertAddressType(e, transaction, commandTimeout);
+            else
+                conn.UpdateAddressType_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveAddressType_by_rowguid(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertAddressType(e, transaction, commandTimeout);
+            else
+                conn.UpdateAddressType_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertAddressType(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[AddressType]
@@ -108,7 +216,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateAddressType(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[AddressType] SET
@@ -118,23 +226,75 @@ namespace MyNamespace.Crud
                     [AddressTypeID] = @AddressTypeId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateAddressType_by_Name(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[AddressType] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateAddressType_by_rowguid(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[AddressType] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteAddressType(this IDbConnection conn, AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[AddressType]
+                WHERE
+                    [AddressTypeID] = @AddressTypeId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteAddressType(this IDbConnection conn, int AddressTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[AddressType]
+                WHERE
+                    [AddressTypeID] = @AddressTypeId";
+            int deleted = conn.Execute(cmd, new { AddressTypeId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion AddressType
 
         #region AWBuildVersion
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, AWBuildVersion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveAWBuildVersion(this IDbConnection conn, AWBuildVersion e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.SystemInformationId == default(byte))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertAWBuildVersion(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateAWBuildVersion(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, AWBuildVersion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertAWBuildVersion(this IDbConnection conn, AWBuildVersion e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [AWBuildVersion]
@@ -154,7 +314,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, AWBuildVersion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateAWBuildVersion(this IDbConnection conn, AWBuildVersion e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [AWBuildVersion] SET
@@ -165,23 +325,58 @@ namespace MyNamespace.Crud
                     [SystemInformationID] = @SystemInformationId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteAWBuildVersion(this IDbConnection conn, AWBuildVersion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [AWBuildVersion]
+                WHERE
+                    [SystemInformationID] = @SystemInformationId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteAWBuildVersion(this IDbConnection conn, byte SystemInformationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [AWBuildVersion]
+                WHERE
+                    [SystemInformationID] = @SystemInformationId";
+            int deleted = conn.Execute(cmd, new { SystemInformationId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion AWBuildVersion
 
         #region BillOfMaterials
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveBillOfMaterials(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BillOfMaterialsId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertBillOfMaterials(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateBillOfMaterials(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveBillOfMaterials_by_ProductAssemblyID_ComponentID_StartDate(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.ProductAssemblyId == null && e.ComponentId == default(int) && e.StartDate == default(DateTime))
+                conn.InsertBillOfMaterials(e, transaction, commandTimeout);
+            else
+                conn.UpdateBillOfMaterials_by_ProductAssemblyID_ComponentID_StartDate(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertBillOfMaterials(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[BillOfMaterials]
@@ -211,7 +406,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateBillOfMaterials(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[BillOfMaterials] SET
@@ -227,23 +422,80 @@ namespace MyNamespace.Crud
                     [BillOfMaterialsID] = @BillOfMaterialsId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateBillOfMaterials_by_ProductAssemblyID_ComponentID_StartDate(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[BillOfMaterials] SET
+                    [BOMLevel] = @BomLevel,
+                    [ComponentID] = @ComponentId,
+                    [EndDate] = @EndDate,
+                    [ModifiedDate] = @ModifiedDate,
+                    [PerAssemblyQty] = @PerAssemblyQty,
+                    [ProductAssemblyID] = @ProductAssemblyId,
+                    [StartDate] = @StartDate,
+                    [UnitMeasureCode] = @UnitMeasureCode
+                WHERE
+                    [ProductAssemblyID] = @ProductAssemblyId AND
+                    [ComponentID] = @ComponentId AND
+                    [StartDate] = @StartDate";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteBillOfMaterials(this IDbConnection conn, BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[BillOfMaterials]
+                WHERE
+                    [BillOfMaterialsID] = @BillOfMaterialsId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteBillOfMaterials(this IDbConnection conn, int BillOfMaterialsId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[BillOfMaterials]
+                WHERE
+                    [BillOfMaterialsID] = @BillOfMaterialsId";
+            int deleted = conn.Execute(cmd, new { BillOfMaterialsId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion BillOfMaterials
 
         #region BusinessEntity
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveBusinessEntity(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertBusinessEntity(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateBusinessEntity(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveBusinessEntity_by_rowguid(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertBusinessEntity(e, transaction, commandTimeout);
+            else
+                conn.UpdateBusinessEntity_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertBusinessEntity(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[BusinessEntity]
@@ -259,7 +511,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateBusinessEntity(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[BusinessEntity] SET
@@ -268,23 +520,71 @@ namespace MyNamespace.Crud
                     [BusinessEntityID] = @BusinessEntityId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateBusinessEntity_by_rowguid(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[BusinessEntity] SET
+                    [ModifiedDate] = @ModifiedDate
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteBusinessEntity(this IDbConnection conn, BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[BusinessEntity]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteBusinessEntity(this IDbConnection conn, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[BusinessEntity]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion BusinessEntity
 
         #region BusinessEntityAddress
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveBusinessEntityAddress(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.AddressId == default(int) && e.AddressTypeId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertBusinessEntityAddress(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateBusinessEntityAddress(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveBusinessEntityAddress_by_rowguid(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertBusinessEntityAddress(e, transaction, commandTimeout);
+            else
+                conn.UpdateBusinessEntityAddress_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertBusinessEntityAddress(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[BusinessEntityAddress]
@@ -306,7 +606,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateBusinessEntityAddress(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[BusinessEntityAddress] SET
@@ -320,23 +620,78 @@ namespace MyNamespace.Crud
                     [AddressTypeID] = @AddressTypeId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateBusinessEntityAddress_by_rowguid(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[BusinessEntityAddress] SET
+                    [AddressID] = @AddressId,
+                    [AddressTypeID] = @AddressTypeId,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [ModifiedDate] = @ModifiedDate
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteBusinessEntityAddress(this IDbConnection conn, BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[BusinessEntityAddress]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [AddressID] = @AddressId AND
+                    [AddressTypeID] = @AddressTypeId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteBusinessEntityAddress(this IDbConnection conn, int BusinessEntityId, int AddressId, int AddressTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[BusinessEntityAddress]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [AddressID] = @AddressId AND
+                    [AddressTypeID] = @AddressTypeId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, AddressId, AddressTypeId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion BusinessEntityAddress
 
         #region BusinessEntityContact
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveBusinessEntityContact(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.PersonId == default(int) && e.ContactTypeId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertBusinessEntityContact(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateBusinessEntityContact(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveBusinessEntityContact_by_rowguid(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertBusinessEntityContact(e, transaction, commandTimeout);
+            else
+                conn.UpdateBusinessEntityContact_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertBusinessEntityContact(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[BusinessEntityContact]
@@ -358,7 +713,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateBusinessEntityContact(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[BusinessEntityContact] SET
@@ -372,23 +727,78 @@ namespace MyNamespace.Crud
                     [ContactTypeID] = @ContactTypeId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateBusinessEntityContact_by_rowguid(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[BusinessEntityContact] SET
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [ContactTypeID] = @ContactTypeId,
+                    [ModifiedDate] = @ModifiedDate,
+                    [PersonID] = @PersonId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteBusinessEntityContact(this IDbConnection conn, BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[BusinessEntityContact]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [PersonID] = @PersonId AND
+                    [ContactTypeID] = @ContactTypeId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteBusinessEntityContact(this IDbConnection conn, int BusinessEntityId, int PersonId, int ContactTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[BusinessEntityContact]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [PersonID] = @PersonId AND
+                    [ContactTypeID] = @ContactTypeId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, PersonId, ContactTypeId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion BusinessEntityContact
 
         #region ContactType
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveContactType(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ContactTypeId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertContactType(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateContactType(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveContactType_by_Name(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertContactType(e, transaction, commandTimeout);
+            else
+                conn.UpdateContactType_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertContactType(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[ContactType]
@@ -406,7 +816,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateContactType(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[ContactType] SET
@@ -416,23 +826,72 @@ namespace MyNamespace.Crud
                     [ContactTypeID] = @ContactTypeId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateContactType_by_Name(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[ContactType] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteContactType(this IDbConnection conn, ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[ContactType]
+                WHERE
+                    [ContactTypeID] = @ContactTypeId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteContactType(this IDbConnection conn, int ContactTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[ContactType]
+                WHERE
+                    [ContactTypeID] = @ContactTypeId";
+            int deleted = conn.Execute(cmd, new { ContactTypeId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ContactType
 
         #region CountryRegion
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveCountryRegion(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.CountryRegionCode == null)
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertCountryRegion(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateCountryRegion(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveCountryRegion_by_Name(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertCountryRegion(e, transaction, commandTimeout);
+            else
+                conn.UpdateCountryRegion_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertCountryRegion(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[CountryRegion]
@@ -452,7 +911,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateCountryRegion(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[CountryRegion] SET
@@ -463,23 +922,62 @@ namespace MyNamespace.Crud
                     [CountryRegionCode] = @CountryRegionCode";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateCountryRegion_by_Name(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[CountryRegion] SET
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteCountryRegion(this IDbConnection conn, CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[CountryRegion]
+                WHERE
+                    [CountryRegionCode] = @CountryRegionCode";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteCountryRegion(this IDbConnection conn, string CountryRegionCode, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[CountryRegion]
+                WHERE
+                    [CountryRegionCode] = @CountryRegionCode";
+            int deleted = conn.Execute(cmd, new { CountryRegionCode }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion CountryRegion
 
         #region CountryRegionCurrency
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, CountryRegionCurrency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveCountryRegionCurrency(this IDbConnection conn, CountryRegionCurrency e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.CountryRegionCode == null && e.CurrencyCode == null)
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertCountryRegionCurrency(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateCountryRegionCurrency(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, CountryRegionCurrency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertCountryRegionCurrency(this IDbConnection conn, CountryRegionCurrency e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[CountryRegionCurrency]
@@ -499,7 +997,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, CountryRegionCurrency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateCountryRegionCurrency(this IDbConnection conn, CountryRegionCurrency e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[CountryRegionCurrency] SET
@@ -511,23 +1009,60 @@ namespace MyNamespace.Crud
                     [CurrencyCode] = @CurrencyCode";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteCountryRegionCurrency(this IDbConnection conn, CountryRegionCurrency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[CountryRegionCurrency]
+                WHERE
+                    [CountryRegionCode] = @CountryRegionCode AND
+                    [CurrencyCode] = @CurrencyCode";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteCountryRegionCurrency(this IDbConnection conn, string CountryRegionCode, string CurrencyCode, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[CountryRegionCurrency]
+                WHERE
+                    [CountryRegionCode] = @CountryRegionCode AND
+                    [CurrencyCode] = @CurrencyCode";
+            int deleted = conn.Execute(cmd, new { CountryRegionCode, CurrencyCode }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion CountryRegionCurrency
 
         #region CreditCard
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveCreditCard(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.CreditCardId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertCreditCard(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateCreditCard(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveCreditCard_by_CardNumber(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.CardNumber == null)
+                conn.InsertCreditCard(e, transaction, commandTimeout);
+            else
+                conn.UpdateCreditCard_by_CardNumber(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertCreditCard(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[CreditCard]
@@ -551,7 +1086,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateCreditCard(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[CreditCard] SET
@@ -564,23 +1099,75 @@ namespace MyNamespace.Crud
                     [CreditCardID] = @CreditCardId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateCreditCard_by_CardNumber(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[CreditCard] SET
+                    [CardNumber] = @CardNumber,
+                    [CardType] = @CardType,
+                    [ExpMonth] = @ExpMonth,
+                    [ExpYear] = @ExpYear,
+                    [ModifiedDate] = @ModifiedDate
+                WHERE
+                    [CardNumber] = @CardNumber";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteCreditCard(this IDbConnection conn, CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[CreditCard]
+                WHERE
+                    [CreditCardID] = @CreditCardId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteCreditCard(this IDbConnection conn, int CreditCardId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[CreditCard]
+                WHERE
+                    [CreditCardID] = @CreditCardId";
+            int deleted = conn.Execute(cmd, new { CreditCardId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion CreditCard
 
         #region Culture
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveCulture(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.CultureId == null)
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertCulture(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateCulture(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveCulture_by_Name(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertCulture(e, transaction, commandTimeout);
+            else
+                conn.UpdateCulture_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertCulture(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[Culture]
@@ -600,7 +1187,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateCulture(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[Culture] SET
@@ -611,23 +1198,73 @@ namespace MyNamespace.Crud
                     [CultureID] = @CultureId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateCulture_by_Name(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Culture] SET
+                    [CultureID] = @CultureId,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteCulture(this IDbConnection conn, Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[Culture]
+                WHERE
+                    [CultureID] = @CultureId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteCulture(this IDbConnection conn, string CultureId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[Culture]
+                WHERE
+                    [CultureID] = @CultureId";
+            int deleted = conn.Execute(cmd, new { CultureId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Culture
 
         #region Currency
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveCurrency(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.CurrencyCode == null)
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertCurrency(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateCurrency(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveCurrency_by_Name(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertCurrency(e, transaction, commandTimeout);
+            else
+                conn.UpdateCurrency_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertCurrency(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[Currency]
@@ -647,7 +1284,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateCurrency(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[Currency] SET
@@ -658,23 +1295,73 @@ namespace MyNamespace.Crud
                     [CurrencyCode] = @CurrencyCode";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateCurrency_by_Name(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[Currency] SET
+                    [CurrencyCode] = @CurrencyCode,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteCurrency(this IDbConnection conn, Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[Currency]
+                WHERE
+                    [CurrencyCode] = @CurrencyCode";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteCurrency(this IDbConnection conn, string CurrencyCode, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[Currency]
+                WHERE
+                    [CurrencyCode] = @CurrencyCode";
+            int deleted = conn.Execute(cmd, new { CurrencyCode }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Currency
 
         #region CurrencyRate
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveCurrencyRate(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.CurrencyRateId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertCurrencyRate(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateCurrencyRate(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveCurrencyRate_by_CurrencyRateDate_FromCurrencyCode_ToCurrencyCode(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.CurrencyRateDate == default(DateTime) && e.FromCurrencyCode == null && e.ToCurrencyCode == null)
+                conn.InsertCurrencyRate(e, transaction, commandTimeout);
+            else
+                conn.UpdateCurrencyRate_by_CurrencyRateDate_FromCurrencyCode_ToCurrencyCode(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertCurrencyRate(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[CurrencyRate]
@@ -700,7 +1387,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateCurrencyRate(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[CurrencyRate] SET
@@ -714,23 +1401,89 @@ namespace MyNamespace.Crud
                     [CurrencyRateID] = @CurrencyRateId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateCurrencyRate_by_CurrencyRateDate_FromCurrencyCode_ToCurrencyCode(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[CurrencyRate] SET
+                    [AverageRate] = @AverageRate,
+                    [CurrencyRateDate] = @CurrencyRateDate,
+                    [EndOfDayRate] = @EndOfDayRate,
+                    [FromCurrencyCode] = @FromCurrencyCode,
+                    [ModifiedDate] = @ModifiedDate,
+                    [ToCurrencyCode] = @ToCurrencyCode
+                WHERE
+                    [CurrencyRateDate] = @CurrencyRateDate AND
+                    [FromCurrencyCode] = @FromCurrencyCode AND
+                    [ToCurrencyCode] = @ToCurrencyCode";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteCurrencyRate(this IDbConnection conn, CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[CurrencyRate]
+                WHERE
+                    [CurrencyRateID] = @CurrencyRateId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteCurrencyRate(this IDbConnection conn, int CurrencyRateId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[CurrencyRate]
+                WHERE
+                    [CurrencyRateID] = @CurrencyRateId";
+            int deleted = conn.Execute(cmd, new { CurrencyRateId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion CurrencyRate
 
         #region Customer
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveCustomer(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.CustomerId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertCustomer(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateCustomer(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveCustomer_by_AccountNumber(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.AccountNumber == null)
+                conn.InsertCustomer(e, transaction, commandTimeout);
+            else
+                conn.UpdateCustomer_by_AccountNumber(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveCustomer_by_rowguid(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertCustomer(e, transaction, commandTimeout);
+            else
+                conn.UpdateCustomer_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertCustomer(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[Customer]
@@ -752,7 +1505,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateCustomer(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[Customer] SET
@@ -764,23 +1517,79 @@ namespace MyNamespace.Crud
                     [CustomerID] = @CustomerId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateCustomer_by_AccountNumber(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[Customer] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [PersonID] = @PersonId,
+                    [StoreID] = @StoreId,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [AccountNumber] = @AccountNumber";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateCustomer_by_rowguid(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[Customer] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [PersonID] = @PersonId,
+                    [StoreID] = @StoreId,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteCustomer(this IDbConnection conn, Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[Customer]
+                WHERE
+                    [CustomerID] = @CustomerId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteCustomer(this IDbConnection conn, int CustomerId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[Customer]
+                WHERE
+                    [CustomerID] = @CustomerId";
+            int deleted = conn.Execute(cmd, new { CustomerId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Customer
 
         #region DatabaseLog
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, DatabaseLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveDatabaseLog(this IDbConnection conn, DatabaseLog e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.DatabaseLogId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertDatabaseLog(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateDatabaseLog(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, DatabaseLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertDatabaseLog(this IDbConnection conn, DatabaseLog e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [DatabaseLog]
@@ -808,7 +1617,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, DatabaseLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateDatabaseLog(this IDbConnection conn, DatabaseLog e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [DatabaseLog] SET
@@ -823,23 +1632,58 @@ namespace MyNamespace.Crud
                     [DatabaseLogID] = @DatabaseLogId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteDatabaseLog(this IDbConnection conn, DatabaseLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [DatabaseLog]
+                WHERE
+                    [DatabaseLogID] = @DatabaseLogId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteDatabaseLog(this IDbConnection conn, int DatabaseLogId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [DatabaseLog]
+                WHERE
+                    [DatabaseLogID] = @DatabaseLogId";
+            int deleted = conn.Execute(cmd, new { DatabaseLogId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion DatabaseLog
 
         #region Department
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveDepartment(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.DepartmentId == default(short))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertDepartment(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateDepartment(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveDepartment_by_Name(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertDepartment(e, transaction, commandTimeout);
+            else
+                conn.UpdateDepartment_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertDepartment(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [HumanResources].[Department]
@@ -859,7 +1703,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateDepartment(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [HumanResources].[Department] SET
@@ -870,6 +1714,45 @@ namespace MyNamespace.Crud
                     [DepartmentID] = @DepartmentId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateDepartment_by_Name(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Department] SET
+                    [GroupName] = @GroupName,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteDepartment(this IDbConnection conn, Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[Department]
+                WHERE
+                    [DepartmentID] = @DepartmentId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteDepartment(this IDbConnection conn, short DepartmentId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[Department]
+                WHERE
+                    [DepartmentID] = @DepartmentId";
+            int deleted = conn.Execute(cmd, new { DepartmentId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Department
 
         #region Document
@@ -877,7 +1760,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Document e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertDocument(this IDbConnection conn, Document e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[Document]
@@ -910,45 +1793,25 @@ namespace MyNamespace.Crud
                 )";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
-        /// <summary>
-        /// Updates existing record
-        /// </summary>
-        public static void Update(this IDbConnection conn, Document e, IDbTransaction transaction = null, int? commandTimeout = null)
-        {
-            string cmd = @"
-                UPDATE [Production].[Document] SET
-                    [ChangeNumber] = @ChangeNumber,
-                    [Document] = @Document1,
-                    [DocumentSummary] = @DocumentSummary,
-                    [FileExtension] = @FileExtension,
-                    [FileName] = @FileName,
-                    [FolderFlag] = @FolderFlag,
-                    [ModifiedDate] = @ModifiedDate,
-                    [Owner] = @Owner,
-                    [Revision] = @Revision,
-                    [Status] = @Status,
-                    [Title] = @Title
-                WHERE
-                    ";
-            conn.Execute(cmd, e, transaction, commandTimeout);
-        }
+
+
         #endregion Document
 
         #region EmailAddress
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, EmailAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveEmailAddress(this IDbConnection conn, EmailAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.EmailAddressId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertEmailAddress(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateEmailAddress(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, EmailAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertEmailAddress(this IDbConnection conn, EmailAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[EmailAddress]
@@ -968,7 +1831,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, EmailAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateEmailAddress(this IDbConnection conn, EmailAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[EmailAddress] SET
@@ -980,23 +1843,82 @@ namespace MyNamespace.Crud
                     [EmailAddressID] = @EmailAddressId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteEmailAddress(this IDbConnection conn, EmailAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[EmailAddress]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [EmailAddressID] = @EmailAddressId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteEmailAddress(this IDbConnection conn, int BusinessEntityId, int EmailAddressId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[EmailAddress]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [EmailAddressID] = @EmailAddressId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, EmailAddressId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion EmailAddress
 
         #region Employee
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveEmployee(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertEmployee(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateEmployee(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveEmployee_by_LoginID(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.LoginId == null)
+                conn.InsertEmployee(e, transaction, commandTimeout);
+            else
+                conn.UpdateEmployee_by_LoginID(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveEmployee_by_NationalIDNumber(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.NationalIdNumber == null)
+                conn.InsertEmployee(e, transaction, commandTimeout);
+            else
+                conn.UpdateEmployee_by_NationalIDNumber(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveEmployee_by_rowguid(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertEmployee(e, transaction, commandTimeout);
+            else
+                conn.UpdateEmployee_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertEmployee(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [HumanResources].[Employee]
@@ -1036,7 +1958,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateEmployee(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [HumanResources].[Employee] SET
@@ -1057,23 +1979,122 @@ namespace MyNamespace.Crud
                     [BusinessEntityID] = @BusinessEntityId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateEmployee_by_LoginID(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Employee] SET
+                    [BirthDate] = @BirthDate,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CurrentFlag] = @CurrentFlag,
+                    [Gender] = @Gender,
+                    [HireDate] = @HireDate,
+                    [JobTitle] = @JobTitle,
+                    [LoginID] = @LoginId,
+                    [MaritalStatus] = @MaritalStatus,
+                    [ModifiedDate] = @ModifiedDate,
+                    [NationalIDNumber] = @NationalIdNumber,
+                    [SalariedFlag] = @SalariedFlag,
+                    [SickLeaveHours] = @SickLeaveHours,
+                    [VacationHours] = @VacationHours
+                WHERE
+                    [LoginID] = @LoginId";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateEmployee_by_NationalIDNumber(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Employee] SET
+                    [BirthDate] = @BirthDate,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CurrentFlag] = @CurrentFlag,
+                    [Gender] = @Gender,
+                    [HireDate] = @HireDate,
+                    [JobTitle] = @JobTitle,
+                    [LoginID] = @LoginId,
+                    [MaritalStatus] = @MaritalStatus,
+                    [ModifiedDate] = @ModifiedDate,
+                    [NationalIDNumber] = @NationalIdNumber,
+                    [SalariedFlag] = @SalariedFlag,
+                    [SickLeaveHours] = @SickLeaveHours,
+                    [VacationHours] = @VacationHours
+                WHERE
+                    [NationalIDNumber] = @NationalIdNumber";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateEmployee_by_rowguid(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Employee] SET
+                    [BirthDate] = @BirthDate,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CurrentFlag] = @CurrentFlag,
+                    [Gender] = @Gender,
+                    [HireDate] = @HireDate,
+                    [JobTitle] = @JobTitle,
+                    [LoginID] = @LoginId,
+                    [MaritalStatus] = @MaritalStatus,
+                    [ModifiedDate] = @ModifiedDate,
+                    [NationalIDNumber] = @NationalIdNumber,
+                    [SalariedFlag] = @SalariedFlag,
+                    [SickLeaveHours] = @SickLeaveHours,
+                    [VacationHours] = @VacationHours
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteEmployee(this IDbConnection conn, Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[Employee]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteEmployee(this IDbConnection conn, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[Employee]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Employee
 
         #region EmployeeDepartmentHistory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, EmployeeDepartmentHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveEmployeeDepartmentHistory(this IDbConnection conn, EmployeeDepartmentHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.DepartmentId == default(short) && e.ShiftId == default(byte) && e.StartDate == default(DateTime))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertEmployeeDepartmentHistory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateEmployeeDepartmentHistory(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, EmployeeDepartmentHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertEmployeeDepartmentHistory(this IDbConnection conn, EmployeeDepartmentHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [HumanResources].[EmployeeDepartmentHistory]
@@ -1099,7 +2120,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, EmployeeDepartmentHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateEmployeeDepartmentHistory(this IDbConnection conn, EmployeeDepartmentHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [HumanResources].[EmployeeDepartmentHistory] SET
@@ -1116,23 +2137,53 @@ namespace MyNamespace.Crud
                     [StartDate] = @StartDate";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteEmployeeDepartmentHistory(this IDbConnection conn, EmployeeDepartmentHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[EmployeeDepartmentHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [DepartmentID] = @DepartmentId AND
+                    [ShiftID] = @ShiftId AND
+                    [StartDate] = @StartDate";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteEmployeeDepartmentHistory(this IDbConnection conn, int BusinessEntityId, short DepartmentId, byte ShiftId, DateTime StartDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[EmployeeDepartmentHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [DepartmentID] = @DepartmentId AND
+                    [ShiftID] = @ShiftId AND
+                    [StartDate] = @StartDate";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, DepartmentId, ShiftId, StartDate }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion EmployeeDepartmentHistory
 
         #region EmployeePayHistory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, EmployeePayHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveEmployeePayHistory(this IDbConnection conn, EmployeePayHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.RateChangeDate == default(DateTime))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertEmployeePayHistory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateEmployeePayHistory(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, EmployeePayHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertEmployeePayHistory(this IDbConnection conn, EmployeePayHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [HumanResources].[EmployeePayHistory]
@@ -1156,7 +2207,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, EmployeePayHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateEmployeePayHistory(this IDbConnection conn, EmployeePayHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [HumanResources].[EmployeePayHistory] SET
@@ -1170,23 +2221,49 @@ namespace MyNamespace.Crud
                     [RateChangeDate] = @RateChangeDate";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteEmployeePayHistory(this IDbConnection conn, EmployeePayHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[EmployeePayHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [RateChangeDate] = @RateChangeDate";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteEmployeePayHistory(this IDbConnection conn, int BusinessEntityId, DateTime RateChangeDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[EmployeePayHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [RateChangeDate] = @RateChangeDate";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, RateChangeDate }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion EmployeePayHistory
 
         #region ErrorLog
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ErrorLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveErrorLog(this IDbConnection conn, ErrorLog e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ErrorLogId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertErrorLog(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateErrorLog(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ErrorLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertErrorLog(this IDbConnection conn, ErrorLog e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [ErrorLog]
@@ -1216,7 +2293,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ErrorLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateErrorLog(this IDbConnection conn, ErrorLog e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [ErrorLog] SET
@@ -1232,23 +2309,47 @@ namespace MyNamespace.Crud
                     [ErrorLogID] = @ErrorLogId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteErrorLog(this IDbConnection conn, ErrorLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [ErrorLog]
+                WHERE
+                    [ErrorLogID] = @ErrorLogId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteErrorLog(this IDbConnection conn, int ErrorLogId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [ErrorLog]
+                WHERE
+                    [ErrorLogID] = @ErrorLogId";
+            int deleted = conn.Execute(cmd, new { ErrorLogId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ErrorLog
 
         #region Illustration
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Illustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveIllustration(this IDbConnection conn, Illustration e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.IllustrationId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertIllustration(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateIllustration(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Illustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertIllustration(this IDbConnection conn, Illustration e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[Illustration]
@@ -1266,7 +2367,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Illustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateIllustration(this IDbConnection conn, Illustration e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[Illustration] SET
@@ -1276,23 +2377,47 @@ namespace MyNamespace.Crud
                     [IllustrationID] = @IllustrationId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteIllustration(this IDbConnection conn, Illustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[Illustration]
+                WHERE
+                    [IllustrationID] = @IllustrationId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteIllustration(this IDbConnection conn, int IllustrationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[Illustration]
+                WHERE
+                    [IllustrationID] = @IllustrationId";
+            int deleted = conn.Execute(cmd, new { IllustrationId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Illustration
 
         #region JobCandidate
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, JobCandidate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveJobCandidate(this IDbConnection conn, JobCandidate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.JobCandidateId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertJobCandidate(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateJobCandidate(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, JobCandidate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertJobCandidate(this IDbConnection conn, JobCandidate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [HumanResources].[JobCandidate]
@@ -1312,7 +2437,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, JobCandidate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateJobCandidate(this IDbConnection conn, JobCandidate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [HumanResources].[JobCandidate] SET
@@ -1323,23 +2448,58 @@ namespace MyNamespace.Crud
                     [JobCandidateID] = @JobCandidateId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteJobCandidate(this IDbConnection conn, JobCandidate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[JobCandidate]
+                WHERE
+                    [JobCandidateID] = @JobCandidateId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteJobCandidate(this IDbConnection conn, int JobCandidateId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[JobCandidate]
+                WHERE
+                    [JobCandidateID] = @JobCandidateId";
+            int deleted = conn.Execute(cmd, new { JobCandidateId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion JobCandidate
 
         #region Location
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveLocation(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.LocationId == default(short))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertLocation(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateLocation(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveLocation_by_Name(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertLocation(e, transaction, commandTimeout);
+            else
+                conn.UpdateLocation_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertLocation(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[Location]
@@ -1361,7 +2521,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateLocation(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[Location] SET
@@ -1373,23 +2533,63 @@ namespace MyNamespace.Crud
                     [LocationID] = @LocationId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateLocation_by_Name(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Location] SET
+                    [Availability] = @Availability,
+                    [CostRate] = @CostRate,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteLocation(this IDbConnection conn, Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[Location]
+                WHERE
+                    [LocationID] = @LocationId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteLocation(this IDbConnection conn, short LocationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[Location]
+                WHERE
+                    [LocationID] = @LocationId";
+            int deleted = conn.Execute(cmd, new { LocationId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Location
 
         #region Password
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Password e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SavePassword(this IDbConnection conn, Password e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertPassword(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdatePassword(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Password e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertPassword(this IDbConnection conn, Password e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[Password]
@@ -1411,7 +2611,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Password e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdatePassword(this IDbConnection conn, Password e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[Password] SET
@@ -1423,23 +2623,58 @@ namespace MyNamespace.Crud
                     [BusinessEntityID] = @BusinessEntityId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeletePassword(this IDbConnection conn, Password e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[Password]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeletePassword(this IDbConnection conn, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[Password]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Password
 
         #region Person
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SavePerson(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertPerson(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdatePerson(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SavePerson_by_rowguid(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertPerson(e, transaction, commandTimeout);
+            else
+                conn.UpdatePerson_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertPerson(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[Person]
@@ -1477,7 +2712,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdatePerson(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[Person] SET
@@ -1497,23 +2732,71 @@ namespace MyNamespace.Crud
                     [BusinessEntityID] = @BusinessEntityId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdatePerson_by_rowguid(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[Person] SET
+                    [AdditionalContactInfo] = @AdditionalContactInfo,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [Demographics] = @Demographics,
+                    [EmailPromotion] = @EmailPromotion,
+                    [FirstName] = @FirstName,
+                    [LastName] = @LastName,
+                    [MiddleName] = @MiddleName,
+                    [ModifiedDate] = @ModifiedDate,
+                    [NameStyle] = @NameStyle,
+                    [PersonType] = @PersonType,
+                    [Suffix] = @Suffix,
+                    [Title] = @Title
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeletePerson(this IDbConnection conn, Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[Person]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeletePerson(this IDbConnection conn, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[Person]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Person
 
         #region PersonCreditCard
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, PersonCreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SavePersonCreditCard(this IDbConnection conn, PersonCreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.CreditCardId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertPersonCreditCard(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdatePersonCreditCard(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, PersonCreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertPersonCreditCard(this IDbConnection conn, PersonCreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[PersonCreditCard]
@@ -1533,7 +2816,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, PersonCreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdatePersonCreditCard(this IDbConnection conn, PersonCreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[PersonCreditCard] SET
@@ -1545,23 +2828,49 @@ namespace MyNamespace.Crud
                     [CreditCardID] = @CreditCardId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeletePersonCreditCard(this IDbConnection conn, PersonCreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[PersonCreditCard]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [CreditCardID] = @CreditCardId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeletePersonCreditCard(this IDbConnection conn, int BusinessEntityId, int CreditCardId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[PersonCreditCard]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [CreditCardID] = @CreditCardId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, CreditCardId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion PersonCreditCard
 
         #region PersonPhone
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, PersonPhone e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SavePersonPhone(this IDbConnection conn, PersonPhone e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.PhoneNumber == null && e.PhoneNumberTypeId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertPersonPhone(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdatePersonPhone(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, PersonPhone e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertPersonPhone(this IDbConnection conn, PersonPhone e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[PersonPhone]
@@ -1583,7 +2892,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, PersonPhone e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdatePersonPhone(this IDbConnection conn, PersonPhone e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[PersonPhone] SET
@@ -1597,23 +2906,51 @@ namespace MyNamespace.Crud
                     [PhoneNumberTypeID] = @PhoneNumberTypeId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeletePersonPhone(this IDbConnection conn, PersonPhone e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[PersonPhone]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [PhoneNumber] = @PhoneNumber AND
+                    [PhoneNumberTypeID] = @PhoneNumberTypeId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeletePersonPhone(this IDbConnection conn, int BusinessEntityId, string PhoneNumber, int PhoneNumberTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[PersonPhone]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [PhoneNumber] = @PhoneNumber AND
+                    [PhoneNumberTypeID] = @PhoneNumberTypeId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, PhoneNumber, PhoneNumberTypeId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion PersonPhone
 
         #region PhoneNumberType
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, PhoneNumberType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SavePhoneNumberType(this IDbConnection conn, PhoneNumberType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.PhoneNumberTypeId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertPhoneNumberType(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdatePhoneNumberType(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, PhoneNumberType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertPhoneNumberType(this IDbConnection conn, PhoneNumberType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[PhoneNumberType]
@@ -1631,7 +2968,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, PhoneNumberType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdatePhoneNumberType(this IDbConnection conn, PhoneNumberType e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[PhoneNumberType] SET
@@ -1641,23 +2978,80 @@ namespace MyNamespace.Crud
                     [PhoneNumberTypeID] = @PhoneNumberTypeId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeletePhoneNumberType(this IDbConnection conn, PhoneNumberType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[PhoneNumberType]
+                WHERE
+                    [PhoneNumberTypeID] = @PhoneNumberTypeId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeletePhoneNumberType(this IDbConnection conn, int PhoneNumberTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[PhoneNumberType]
+                WHERE
+                    [PhoneNumberTypeID] = @PhoneNumberTypeId";
+            int deleted = conn.Execute(cmd, new { PhoneNumberTypeId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion PhoneNumberType
 
         #region Product
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProduct(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProduct(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProduct(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProduct_by_Name(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertProduct(e, transaction, commandTimeout);
+            else
+                conn.UpdateProduct_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProduct_by_ProductNumber(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.ProductNumber == null)
+                conn.InsertProduct(e, transaction, commandTimeout);
+            else
+                conn.UpdateProduct_by_ProductNumber(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProduct_by_rowguid(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertProduct(e, transaction, commandTimeout);
+            else
+                conn.UpdateProduct_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProduct(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[Product]
@@ -1717,7 +3111,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProduct(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[Product] SET
@@ -1748,23 +3142,174 @@ namespace MyNamespace.Crud
                     [ProductID] = @ProductId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProduct_by_Name(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Product] SET
+                    [Class] = @Class,
+                    [Color] = @Color,
+                    [DaysToManufacture] = @DaysToManufacture,
+                    [DiscontinuedDate] = @DiscontinuedDate,
+                    [FinishedGoodsFlag] = @FinishedGoodsFlag,
+                    [ListPrice] = @ListPrice,
+                    [MakeFlag] = @MakeFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductLine] = @ProductLine,
+                    [ProductModelID] = @ProductModelId,
+                    [ProductNumber] = @ProductNumber,
+                    [ProductSubcategoryID] = @ProductSubcategoryId,
+                    [ReorderPoint] = @ReorderPoint,
+                    [SafetyStockLevel] = @SafetyStockLevel,
+                    [SellEndDate] = @SellEndDate,
+                    [SellStartDate] = @SellStartDate,
+                    [Size] = @Size,
+                    [SizeUnitMeasureCode] = @SizeUnitMeasureCode,
+                    [StandardCost] = @StandardCost,
+                    [Style] = @Style,
+                    [Weight] = @Weight,
+                    [WeightUnitMeasureCode] = @WeightUnitMeasureCode
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProduct_by_ProductNumber(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Product] SET
+                    [Class] = @Class,
+                    [Color] = @Color,
+                    [DaysToManufacture] = @DaysToManufacture,
+                    [DiscontinuedDate] = @DiscontinuedDate,
+                    [FinishedGoodsFlag] = @FinishedGoodsFlag,
+                    [ListPrice] = @ListPrice,
+                    [MakeFlag] = @MakeFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductLine] = @ProductLine,
+                    [ProductModelID] = @ProductModelId,
+                    [ProductNumber] = @ProductNumber,
+                    [ProductSubcategoryID] = @ProductSubcategoryId,
+                    [ReorderPoint] = @ReorderPoint,
+                    [SafetyStockLevel] = @SafetyStockLevel,
+                    [SellEndDate] = @SellEndDate,
+                    [SellStartDate] = @SellStartDate,
+                    [Size] = @Size,
+                    [SizeUnitMeasureCode] = @SizeUnitMeasureCode,
+                    [StandardCost] = @StandardCost,
+                    [Style] = @Style,
+                    [Weight] = @Weight,
+                    [WeightUnitMeasureCode] = @WeightUnitMeasureCode
+                WHERE
+                    [ProductNumber] = @ProductNumber";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProduct_by_rowguid(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Product] SET
+                    [Class] = @Class,
+                    [Color] = @Color,
+                    [DaysToManufacture] = @DaysToManufacture,
+                    [DiscontinuedDate] = @DiscontinuedDate,
+                    [FinishedGoodsFlag] = @FinishedGoodsFlag,
+                    [ListPrice] = @ListPrice,
+                    [MakeFlag] = @MakeFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductLine] = @ProductLine,
+                    [ProductModelID] = @ProductModelId,
+                    [ProductNumber] = @ProductNumber,
+                    [ProductSubcategoryID] = @ProductSubcategoryId,
+                    [ReorderPoint] = @ReorderPoint,
+                    [SafetyStockLevel] = @SafetyStockLevel,
+                    [SellEndDate] = @SellEndDate,
+                    [SellStartDate] = @SellStartDate,
+                    [Size] = @Size,
+                    [SizeUnitMeasureCode] = @SizeUnitMeasureCode,
+                    [StandardCost] = @StandardCost,
+                    [Style] = @Style,
+                    [Weight] = @Weight,
+                    [WeightUnitMeasureCode] = @WeightUnitMeasureCode
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProduct(this IDbConnection conn, Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[Product]
+                WHERE
+                    [ProductID] = @ProductId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProduct(this IDbConnection conn, int ProductId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[Product]
+                WHERE
+                    [ProductID] = @ProductId";
+            int deleted = conn.Execute(cmd, new { ProductId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Product
 
         #region ProductCategory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductCategory(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductCategoryId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductCategory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductCategory(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProductCategory_by_Name(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertProductCategory(e, transaction, commandTimeout);
+            else
+                conn.UpdateProductCategory_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProductCategory_by_rowguid(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertProductCategory(e, transaction, commandTimeout);
+            else
+                conn.UpdateProductCategory_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductCategory(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductCategory]
@@ -1782,7 +3327,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductCategory(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductCategory] SET
@@ -1792,23 +3337,75 @@ namespace MyNamespace.Crud
                     [ProductCategoryID] = @ProductCategoryId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProductCategory_by_Name(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductCategory] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProductCategory_by_rowguid(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductCategory] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductCategory(this IDbConnection conn, ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductCategory]
+                WHERE
+                    [ProductCategoryID] = @ProductCategoryId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductCategory(this IDbConnection conn, int ProductCategoryId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductCategory]
+                WHERE
+                    [ProductCategoryID] = @ProductCategoryId";
+            int deleted = conn.Execute(cmd, new { ProductCategoryId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductCategory
 
         #region ProductCostHistory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductCostHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductCostHistory(this IDbConnection conn, ProductCostHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductId == default(int) && e.StartDate == default(DateTime))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductCostHistory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductCostHistory(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductCostHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductCostHistory(this IDbConnection conn, ProductCostHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductCostHistory]
@@ -1832,7 +3429,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductCostHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductCostHistory(this IDbConnection conn, ProductCostHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductCostHistory] SET
@@ -1846,23 +3443,60 @@ namespace MyNamespace.Crud
                     [StartDate] = @StartDate";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductCostHistory(this IDbConnection conn, ProductCostHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductCostHistory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [StartDate] = @StartDate";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductCostHistory(this IDbConnection conn, int ProductId, DateTime StartDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductCostHistory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [StartDate] = @StartDate";
+            int deleted = conn.Execute(cmd, new { ProductId, StartDate }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductCostHistory
 
         #region ProductDescription
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductDescription(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductDescriptionId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductDescription(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductDescription(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProductDescription_by_rowguid(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertProductDescription(e, transaction, commandTimeout);
+            else
+                conn.UpdateProductDescription_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductDescription(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductDescription]
@@ -1880,7 +3514,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductDescription(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductDescription] SET
@@ -1890,23 +3524,61 @@ namespace MyNamespace.Crud
                     [ProductDescriptionID] = @ProductDescriptionId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProductDescription_by_rowguid(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductDescription] SET
+                    [Description] = @Description,
+                    [ModifiedDate] = @ModifiedDate
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductDescription(this IDbConnection conn, ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductDescription]
+                WHERE
+                    [ProductDescriptionID] = @ProductDescriptionId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductDescription(this IDbConnection conn, int ProductDescriptionId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductDescription]
+                WHERE
+                    [ProductDescriptionID] = @ProductDescriptionId";
+            int deleted = conn.Execute(cmd, new { ProductDescriptionId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductDescription
 
         #region ProductDocument
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductDocument e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductDocument(this IDbConnection conn, ProductDocument e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductDocument(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductDocument(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductDocument e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductDocument(this IDbConnection conn, ProductDocument e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductDocument]
@@ -1924,7 +3596,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductDocument e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductDocument(this IDbConnection conn, ProductDocument e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductDocument] SET
@@ -1934,23 +3606,47 @@ namespace MyNamespace.Crud
                     [ProductID] = @ProductId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductDocument(this IDbConnection conn, ProductDocument e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductDocument]
+                WHERE
+                    [ProductID] = @ProductId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductDocument(this IDbConnection conn, int ProductId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductDocument]
+                WHERE
+                    [ProductID] = @ProductId";
+            int deleted = conn.Execute(cmd, new { ProductId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductDocument
 
         #region ProductInventory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductInventory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductInventory(this IDbConnection conn, ProductInventory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductId == default(int) && e.LocationId == default(short))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductInventory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductInventory(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductInventory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductInventory(this IDbConnection conn, ProductInventory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductInventory]
@@ -1976,7 +3672,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductInventory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductInventory(this IDbConnection conn, ProductInventory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductInventory] SET
@@ -1991,23 +3687,49 @@ namespace MyNamespace.Crud
                     [LocationID] = @LocationId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductInventory(this IDbConnection conn, ProductInventory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductInventory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [LocationID] = @LocationId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductInventory(this IDbConnection conn, int ProductId, short LocationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductInventory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [LocationID] = @LocationId";
+            int deleted = conn.Execute(cmd, new { ProductId, LocationId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductInventory
 
         #region ProductListPriceHistory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductListPriceHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductListPriceHistory(this IDbConnection conn, ProductListPriceHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductId == default(int) && e.StartDate == default(DateTime))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductListPriceHistory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductListPriceHistory(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductListPriceHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductListPriceHistory(this IDbConnection conn, ProductListPriceHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductListPriceHistory]
@@ -2031,7 +3753,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductListPriceHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductListPriceHistory(this IDbConnection conn, ProductListPriceHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductListPriceHistory] SET
@@ -2045,23 +3767,71 @@ namespace MyNamespace.Crud
                     [StartDate] = @StartDate";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductListPriceHistory(this IDbConnection conn, ProductListPriceHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductListPriceHistory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [StartDate] = @StartDate";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductListPriceHistory(this IDbConnection conn, int ProductId, DateTime StartDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductListPriceHistory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [StartDate] = @StartDate";
+            int deleted = conn.Execute(cmd, new { ProductId, StartDate }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductListPriceHistory
 
         #region ProductModel
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductModel(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductModelId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductModel(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductModel(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProductModel_by_Name(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertProductModel(e, transaction, commandTimeout);
+            else
+                conn.UpdateProductModel_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProductModel_by_rowguid(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertProductModel(e, transaction, commandTimeout);
+            else
+                conn.UpdateProductModel_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductModel(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductModel]
@@ -2083,7 +3853,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductModel(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductModel] SET
@@ -2095,23 +3865,79 @@ namespace MyNamespace.Crud
                     [ProductModelID] = @ProductModelId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProductModel_by_Name(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductModel] SET
+                    [CatalogDescription] = @CatalogDescription,
+                    [Instructions] = @Instructions,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProductModel_by_rowguid(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductModel] SET
+                    [CatalogDescription] = @CatalogDescription,
+                    [Instructions] = @Instructions,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductModel(this IDbConnection conn, ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductModel]
+                WHERE
+                    [ProductModelID] = @ProductModelId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductModel(this IDbConnection conn, int ProductModelId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductModel]
+                WHERE
+                    [ProductModelID] = @ProductModelId";
+            int deleted = conn.Execute(cmd, new { ProductModelId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductModel
 
         #region ProductModelIllustration
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductModelIllustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductModelIllustration(this IDbConnection conn, ProductModelIllustration e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductModelId == default(int) && e.IllustrationId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductModelIllustration(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductModelIllustration(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductModelIllustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductModelIllustration(this IDbConnection conn, ProductModelIllustration e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductModelIllustration]
@@ -2131,7 +3957,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductModelIllustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductModelIllustration(this IDbConnection conn, ProductModelIllustration e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductModelIllustration] SET
@@ -2143,23 +3969,49 @@ namespace MyNamespace.Crud
                     [IllustrationID] = @IllustrationId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductModelIllustration(this IDbConnection conn, ProductModelIllustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductModelIllustration]
+                WHERE
+                    [ProductModelID] = @ProductModelId AND
+                    [IllustrationID] = @IllustrationId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductModelIllustration(this IDbConnection conn, int ProductModelId, int IllustrationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductModelIllustration]
+                WHERE
+                    [ProductModelID] = @ProductModelId AND
+                    [IllustrationID] = @IllustrationId";
+            int deleted = conn.Execute(cmd, new { ProductModelId, IllustrationId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductModelIllustration
 
         #region ProductModelProductDescriptionCulture
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductModelProductDescriptionCulture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductModelProductDescriptionCulture(this IDbConnection conn, ProductModelProductDescriptionCulture e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductModelId == default(int) && e.ProductDescriptionId == default(int) && e.CultureId == null)
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductModelProductDescriptionCulture(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductModelProductDescriptionCulture(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductModelProductDescriptionCulture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductModelProductDescriptionCulture(this IDbConnection conn, ProductModelProductDescriptionCulture e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductModelProductDescriptionCulture]
@@ -2181,7 +4033,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductModelProductDescriptionCulture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductModelProductDescriptionCulture(this IDbConnection conn, ProductModelProductDescriptionCulture e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductModelProductDescriptionCulture] SET
@@ -2195,23 +4047,51 @@ namespace MyNamespace.Crud
                     [CultureID] = @CultureId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductModelProductDescriptionCulture(this IDbConnection conn, ProductModelProductDescriptionCulture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductModelProductDescriptionCulture]
+                WHERE
+                    [ProductModelID] = @ProductModelId AND
+                    [ProductDescriptionID] = @ProductDescriptionId AND
+                    [CultureID] = @CultureId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductModelProductDescriptionCulture(this IDbConnection conn, int ProductModelId, int ProductDescriptionId, string CultureId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductModelProductDescriptionCulture]
+                WHERE
+                    [ProductModelID] = @ProductModelId AND
+                    [ProductDescriptionID] = @ProductDescriptionId AND
+                    [CultureID] = @CultureId";
+            int deleted = conn.Execute(cmd, new { ProductModelId, ProductDescriptionId, CultureId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductModelProductDescriptionCulture
 
         #region ProductPhoto
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductPhoto(this IDbConnection conn, ProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductPhotoId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductPhoto(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductPhoto(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductPhoto(this IDbConnection conn, ProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductPhoto]
@@ -2235,7 +4115,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductPhoto(this IDbConnection conn, ProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductPhoto] SET
@@ -2248,23 +4128,47 @@ namespace MyNamespace.Crud
                     [ProductPhotoID] = @ProductPhotoId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductPhoto(this IDbConnection conn, ProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductPhoto]
+                WHERE
+                    [ProductPhotoID] = @ProductPhotoId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductPhoto(this IDbConnection conn, int ProductPhotoId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductPhoto]
+                WHERE
+                    [ProductPhotoID] = @ProductPhotoId";
+            int deleted = conn.Execute(cmd, new { ProductPhotoId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductPhoto
 
         #region ProductProductPhoto
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductProductPhoto(this IDbConnection conn, ProductProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductId == default(int) && e.ProductPhotoId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductProductPhoto(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductProductPhoto(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductProductPhoto(this IDbConnection conn, ProductProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductProductPhoto]
@@ -2286,7 +4190,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductProductPhoto(this IDbConnection conn, ProductProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductProductPhoto] SET
@@ -2299,23 +4203,49 @@ namespace MyNamespace.Crud
                     [ProductPhotoID] = @ProductPhotoId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductProductPhoto(this IDbConnection conn, ProductProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductProductPhoto]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [ProductPhotoID] = @ProductPhotoId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductProductPhoto(this IDbConnection conn, int ProductId, int ProductPhotoId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductProductPhoto]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [ProductPhotoID] = @ProductPhotoId";
+            int deleted = conn.Execute(cmd, new { ProductId, ProductPhotoId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductProductPhoto
 
         #region ProductReview
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductReview e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductReview(this IDbConnection conn, ProductReview e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductReviewId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductReview(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductReview(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductReview e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductReview(this IDbConnection conn, ProductReview e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductReview]
@@ -2343,7 +4273,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductReview e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductReview(this IDbConnection conn, ProductReview e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductReview] SET
@@ -2358,23 +4288,69 @@ namespace MyNamespace.Crud
                     [ProductReviewID] = @ProductReviewId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductReview(this IDbConnection conn, ProductReview e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductReview]
+                WHERE
+                    [ProductReviewID] = @ProductReviewId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductReview(this IDbConnection conn, int ProductReviewId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductReview]
+                WHERE
+                    [ProductReviewID] = @ProductReviewId";
+            int deleted = conn.Execute(cmd, new { ProductReviewId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductReview
 
         #region ProductSubcategory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductSubcategory(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductSubcategoryId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductSubcategory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductSubcategory(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProductSubcategory_by_Name(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertProductSubcategory(e, transaction, commandTimeout);
+            else
+                conn.UpdateProductSubcategory_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveProductSubcategory_by_rowguid(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertProductSubcategory(e, transaction, commandTimeout);
+            else
+                conn.UpdateProductSubcategory_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductSubcategory(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ProductSubcategory]
@@ -2394,7 +4370,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductSubcategory(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ProductSubcategory] SET
@@ -2405,23 +4381,77 @@ namespace MyNamespace.Crud
                     [ProductSubcategoryID] = @ProductSubcategoryId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProductSubcategory_by_Name(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductSubcategory] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductCategoryID] = @ProductCategoryId
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateProductSubcategory_by_rowguid(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductSubcategory] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductCategoryID] = @ProductCategoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductSubcategory(this IDbConnection conn, ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductSubcategory]
+                WHERE
+                    [ProductSubcategoryID] = @ProductSubcategoryId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductSubcategory(this IDbConnection conn, int ProductSubcategoryId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ProductSubcategory]
+                WHERE
+                    [ProductSubcategoryID] = @ProductSubcategoryId";
+            int deleted = conn.Execute(cmd, new { ProductSubcategoryId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductSubcategory
 
         #region ProductVendor
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ProductVendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveProductVendor(this IDbConnection conn, ProductVendor e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ProductId == default(int) && e.BusinessEntityId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertProductVendor(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateProductVendor(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ProductVendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertProductVendor(this IDbConnection conn, ProductVendor e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Purchasing].[ProductVendor]
@@ -2457,7 +4487,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ProductVendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateProductVendor(this IDbConnection conn, ProductVendor e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Purchasing].[ProductVendor] SET
@@ -2477,23 +4507,49 @@ namespace MyNamespace.Crud
                     [BusinessEntityID] = @BusinessEntityId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteProductVendor(this IDbConnection conn, ProductVendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[ProductVendor]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteProductVendor(this IDbConnection conn, int ProductId, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[ProductVendor]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, new { ProductId, BusinessEntityId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ProductVendor
 
         #region PurchaseOrderDetail
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, PurchaseOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SavePurchaseOrderDetail(this IDbConnection conn, PurchaseOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.PurchaseOrderId == default(int) && e.PurchaseOrderDetailId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertPurchaseOrderDetail(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdatePurchaseOrderDetail(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, PurchaseOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertPurchaseOrderDetail(this IDbConnection conn, PurchaseOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Purchasing].[PurchaseOrderDetail]
@@ -2523,7 +4579,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, PurchaseOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdatePurchaseOrderDetail(this IDbConnection conn, PurchaseOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Purchasing].[PurchaseOrderDetail] SET
@@ -2540,23 +4596,49 @@ namespace MyNamespace.Crud
                     [PurchaseOrderDetailID] = @PurchaseOrderDetailId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeletePurchaseOrderDetail(this IDbConnection conn, PurchaseOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[PurchaseOrderDetail]
+                WHERE
+                    [PurchaseOrderID] = @PurchaseOrderId AND
+                    [PurchaseOrderDetailID] = @PurchaseOrderDetailId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeletePurchaseOrderDetail(this IDbConnection conn, int PurchaseOrderId, int PurchaseOrderDetailId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[PurchaseOrderDetail]
+                WHERE
+                    [PurchaseOrderID] = @PurchaseOrderId AND
+                    [PurchaseOrderDetailID] = @PurchaseOrderDetailId";
+            int deleted = conn.Execute(cmd, new { PurchaseOrderId, PurchaseOrderDetailId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion PurchaseOrderDetail
 
         #region PurchaseOrderHeader
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, PurchaseOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SavePurchaseOrderHeader(this IDbConnection conn, PurchaseOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.PurchaseOrderId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertPurchaseOrderHeader(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdatePurchaseOrderHeader(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, PurchaseOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertPurchaseOrderHeader(this IDbConnection conn, PurchaseOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Purchasing].[PurchaseOrderHeader]
@@ -2592,7 +4674,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, PurchaseOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdatePurchaseOrderHeader(this IDbConnection conn, PurchaseOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Purchasing].[PurchaseOrderHeader] SET
@@ -2611,23 +4693,58 @@ namespace MyNamespace.Crud
                     [PurchaseOrderID] = @PurchaseOrderId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeletePurchaseOrderHeader(this IDbConnection conn, PurchaseOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[PurchaseOrderHeader]
+                WHERE
+                    [PurchaseOrderID] = @PurchaseOrderId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeletePurchaseOrderHeader(this IDbConnection conn, int PurchaseOrderId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[PurchaseOrderHeader]
+                WHERE
+                    [PurchaseOrderID] = @PurchaseOrderId";
+            int deleted = conn.Execute(cmd, new { PurchaseOrderId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion PurchaseOrderHeader
 
         #region SalesOrderDetail
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesOrderDetail(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.SalesOrderId == default(int) && e.SalesOrderDetailId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesOrderDetail(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesOrderDetail(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesOrderDetail_by_rowguid(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSalesOrderDetail(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesOrderDetail_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesOrderDetail(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesOrderDetail]
@@ -2657,7 +4774,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesOrderDetail(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesOrderDetail] SET
@@ -2674,23 +4791,91 @@ namespace MyNamespace.Crud
                     [SalesOrderDetailID] = @SalesOrderDetailId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesOrderDetail_by_rowguid(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesOrderDetail] SET
+                    [CarrierTrackingNumber] = @CarrierTrackingNumber,
+                    [ModifiedDate] = @ModifiedDate,
+                    [OrderQty] = @OrderQty,
+                    [ProductID] = @ProductId,
+                    [SalesOrderID] = @SalesOrderId,
+                    [SpecialOfferID] = @SpecialOfferId,
+                    [UnitPrice] = @UnitPrice,
+                    [UnitPriceDiscount] = @UnitPriceDiscount
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesOrderDetail(this IDbConnection conn, SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesOrderDetail]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId AND
+                    [SalesOrderDetailID] = @SalesOrderDetailId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesOrderDetail(this IDbConnection conn, int SalesOrderId, int SalesOrderDetailId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesOrderDetail]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId AND
+                    [SalesOrderDetailID] = @SalesOrderDetailId";
+            int deleted = conn.Execute(cmd, new { SalesOrderId, SalesOrderDetailId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesOrderDetail
 
         #region SalesOrderHeader
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesOrderHeader(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.SalesOrderId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesOrderHeader(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesOrderHeader(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesOrderHeader_by_rowguid(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSalesOrderHeader(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesOrderHeader_by_rowguid(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesOrderHeader_by_SalesOrderNumber(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.SalesOrderNumber == null)
+                conn.InsertSalesOrderHeader(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesOrderHeader_by_SalesOrderNumber(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesOrderHeader(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesOrderHeader]
@@ -2748,7 +4933,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesOrderHeader(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesOrderHeader] SET
@@ -2778,23 +4963,115 @@ namespace MyNamespace.Crud
                     [SalesOrderID] = @SalesOrderId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesOrderHeader_by_rowguid(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesOrderHeader] SET
+                    [AccountNumber] = @AccountNumber,
+                    [BillToAddressID] = @BillToAddressId,
+                    [Comment] = @Comment,
+                    [CreditCardApprovalCode] = @CreditCardApprovalCode,
+                    [CreditCardID] = @CreditCardId,
+                    [CurrencyRateID] = @CurrencyRateId,
+                    [CustomerID] = @CustomerId,
+                    [DueDate] = @DueDate,
+                    [Freight] = @Freight,
+                    [ModifiedDate] = @ModifiedDate,
+                    [OnlineOrderFlag] = @OnlineOrderFlag,
+                    [OrderDate] = @OrderDate,
+                    [PurchaseOrderNumber] = @PurchaseOrderNumber,
+                    [RevisionNumber] = @RevisionNumber,
+                    [SalesPersonID] = @SalesPersonId,
+                    [ShipDate] = @ShipDate,
+                    [ShipMethodID] = @ShipMethodId,
+                    [ShipToAddressID] = @ShipToAddressId,
+                    [Status] = @Status,
+                    [SubTotal] = @SubTotal,
+                    [TaxAmt] = @TaxAmt,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesOrderHeader_by_SalesOrderNumber(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesOrderHeader] SET
+                    [AccountNumber] = @AccountNumber,
+                    [BillToAddressID] = @BillToAddressId,
+                    [Comment] = @Comment,
+                    [CreditCardApprovalCode] = @CreditCardApprovalCode,
+                    [CreditCardID] = @CreditCardId,
+                    [CurrencyRateID] = @CurrencyRateId,
+                    [CustomerID] = @CustomerId,
+                    [DueDate] = @DueDate,
+                    [Freight] = @Freight,
+                    [ModifiedDate] = @ModifiedDate,
+                    [OnlineOrderFlag] = @OnlineOrderFlag,
+                    [OrderDate] = @OrderDate,
+                    [PurchaseOrderNumber] = @PurchaseOrderNumber,
+                    [RevisionNumber] = @RevisionNumber,
+                    [SalesPersonID] = @SalesPersonId,
+                    [ShipDate] = @ShipDate,
+                    [ShipMethodID] = @ShipMethodId,
+                    [ShipToAddressID] = @ShipToAddressId,
+                    [Status] = @Status,
+                    [SubTotal] = @SubTotal,
+                    [TaxAmt] = @TaxAmt,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [SalesOrderNumber] = @SalesOrderNumber";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesOrderHeader(this IDbConnection conn, SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesOrderHeader]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesOrderHeader(this IDbConnection conn, int SalesOrderId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesOrderHeader]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId";
+            int deleted = conn.Execute(cmd, new { SalesOrderId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesOrderHeader
 
         #region SalesOrderHeaderSalesReason
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesOrderHeaderSalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesOrderHeaderSalesReason(this IDbConnection conn, SalesOrderHeaderSalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.SalesOrderId == default(int) && e.SalesReasonId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesOrderHeaderSalesReason(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesOrderHeaderSalesReason(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesOrderHeaderSalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesOrderHeaderSalesReason(this IDbConnection conn, SalesOrderHeaderSalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesOrderHeaderSalesReason]
@@ -2814,7 +5091,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesOrderHeaderSalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesOrderHeaderSalesReason(this IDbConnection conn, SalesOrderHeaderSalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesOrderHeaderSalesReason] SET
@@ -2826,23 +5103,60 @@ namespace MyNamespace.Crud
                     [SalesReasonID] = @SalesReasonId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesOrderHeaderSalesReason(this IDbConnection conn, SalesOrderHeaderSalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesOrderHeaderSalesReason]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId AND
+                    [SalesReasonID] = @SalesReasonId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesOrderHeaderSalesReason(this IDbConnection conn, int SalesOrderId, int SalesReasonId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesOrderHeaderSalesReason]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId AND
+                    [SalesReasonID] = @SalesReasonId";
+            int deleted = conn.Execute(cmd, new { SalesOrderId, SalesReasonId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesOrderHeaderSalesReason
 
         #region SalesPerson
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesPerson(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesPerson(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesPerson(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesPerson_by_rowguid(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSalesPerson(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesPerson_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesPerson(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesPerson]
@@ -2872,7 +5186,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesPerson(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesPerson] SET
@@ -2888,23 +5202,78 @@ namespace MyNamespace.Crud
                     [BusinessEntityID] = @BusinessEntityId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesPerson_by_rowguid(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesPerson] SET
+                    [Bonus] = @Bonus,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CommissionPct] = @CommissionPct,
+                    [ModifiedDate] = @ModifiedDate,
+                    [SalesLastYear] = @SalesLastYear,
+                    [SalesQuota] = @SalesQuota,
+                    [SalesYTD] = @SalesYtd,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesPerson(this IDbConnection conn, SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesPerson]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesPerson(this IDbConnection conn, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesPerson]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesPerson
 
         #region SalesPersonQuotaHistory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesPersonQuotaHistory(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.QuotaDate == default(DateTime))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesPersonQuotaHistory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesPersonQuotaHistory(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesPersonQuotaHistory_by_rowguid(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSalesPersonQuotaHistory(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesPersonQuotaHistory_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesPersonQuotaHistory(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesPersonQuotaHistory]
@@ -2926,7 +5295,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesPersonQuotaHistory(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesPersonQuotaHistory] SET
@@ -2939,23 +5308,65 @@ namespace MyNamespace.Crud
                     [QuotaDate] = @QuotaDate";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesPersonQuotaHistory_by_rowguid(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesPersonQuotaHistory] SET
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [ModifiedDate] = @ModifiedDate,
+                    [QuotaDate] = @QuotaDate,
+                    [SalesQuota] = @SalesQuota
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesPersonQuotaHistory(this IDbConnection conn, SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesPersonQuotaHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [QuotaDate] = @QuotaDate";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesPersonQuotaHistory(this IDbConnection conn, int BusinessEntityId, DateTime QuotaDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesPersonQuotaHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [QuotaDate] = @QuotaDate";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, QuotaDate }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesPersonQuotaHistory
 
         #region SalesReason
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesReason(this IDbConnection conn, SalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.SalesReasonId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesReason(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesReason(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesReason(this IDbConnection conn, SalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesReason]
@@ -2975,7 +5386,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesReason(this IDbConnection conn, SalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesReason] SET
@@ -2986,23 +5397,69 @@ namespace MyNamespace.Crud
                     [SalesReasonID] = @SalesReasonId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesReason(this IDbConnection conn, SalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesReason]
+                WHERE
+                    [SalesReasonID] = @SalesReasonId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesReason(this IDbConnection conn, int SalesReasonId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesReason]
+                WHERE
+                    [SalesReasonID] = @SalesReasonId";
+            int deleted = conn.Execute(cmd, new { SalesReasonId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesReason
 
         #region SalesTaxRate
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesTaxRate(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.SalesTaxRateId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesTaxRate(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesTaxRate(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesTaxRate_by_rowguid(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSalesTaxRate(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesTaxRate_by_rowguid(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesTaxRate_by_StateProvinceID_TaxType(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.StateProvinceId == default(int) && e.TaxType == default(byte))
+                conn.InsertSalesTaxRate(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesTaxRate_by_StateProvinceID_TaxType(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesTaxRate(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesTaxRate]
@@ -3026,7 +5483,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesTaxRate(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesTaxRate] SET
@@ -3039,23 +5496,104 @@ namespace MyNamespace.Crud
                     [SalesTaxRateID] = @SalesTaxRateId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesTaxRate_by_rowguid(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTaxRate] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceID] = @StateProvinceId,
+                    [TaxRate] = @TaxRate,
+                    [TaxType] = @TaxType
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesTaxRate_by_StateProvinceID_TaxType(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTaxRate] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceID] = @StateProvinceId,
+                    [TaxRate] = @TaxRate,
+                    [TaxType] = @TaxType
+                WHERE
+                    [StateProvinceID] = @StateProvinceId AND
+                    [TaxType] = @TaxType";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesTaxRate(this IDbConnection conn, SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesTaxRate]
+                WHERE
+                    [SalesTaxRateID] = @SalesTaxRateId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesTaxRate(this IDbConnection conn, int SalesTaxRateId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesTaxRate]
+                WHERE
+                    [SalesTaxRateID] = @SalesTaxRateId";
+            int deleted = conn.Execute(cmd, new { SalesTaxRateId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesTaxRate
 
         #region SalesTerritory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesTerritory(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.TerritoryId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesTerritory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesTerritory(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesTerritory_by_Name(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertSalesTerritory(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesTerritory_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesTerritory_by_rowguid(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSalesTerritory(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesTerritory_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesTerritory(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesTerritory]
@@ -3085,7 +5623,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesTerritory(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesTerritory] SET
@@ -3101,23 +5639,98 @@ namespace MyNamespace.Crud
                     [TerritoryID] = @TerritoryId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesTerritory_by_Name(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTerritory] SET
+                    [CostLastYear] = @CostLastYear,
+                    [CostYTD] = @CostYtd,
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [Group] = @Group,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [SalesLastYear] = @SalesLastYear,
+                    [SalesYTD] = @SalesYtd
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesTerritory_by_rowguid(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTerritory] SET
+                    [CostLastYear] = @CostLastYear,
+                    [CostYTD] = @CostYtd,
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [Group] = @Group,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [SalesLastYear] = @SalesLastYear,
+                    [SalesYTD] = @SalesYtd
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesTerritory(this IDbConnection conn, SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesTerritory]
+                WHERE
+                    [TerritoryID] = @TerritoryId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesTerritory(this IDbConnection conn, int TerritoryId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesTerritory]
+                WHERE
+                    [TerritoryID] = @TerritoryId";
+            int deleted = conn.Execute(cmd, new { TerritoryId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesTerritory
 
         #region SalesTerritoryHistory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSalesTerritoryHistory(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int) && e.TerritoryId == default(int) && e.StartDate == default(DateTime))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSalesTerritoryHistory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSalesTerritoryHistory(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSalesTerritoryHistory_by_rowguid(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSalesTerritoryHistory(e, transaction, commandTimeout);
+            else
+                conn.UpdateSalesTerritoryHistory_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSalesTerritoryHistory(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SalesTerritoryHistory]
@@ -3141,7 +5754,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSalesTerritoryHistory(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SalesTerritoryHistory] SET
@@ -3156,23 +5769,79 @@ namespace MyNamespace.Crud
                     [StartDate] = @StartDate";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSalesTerritoryHistory_by_rowguid(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTerritoryHistory] SET
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [EndDate] = @EndDate,
+                    [ModifiedDate] = @ModifiedDate,
+                    [StartDate] = @StartDate,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSalesTerritoryHistory(this IDbConnection conn, SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesTerritoryHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [TerritoryID] = @TerritoryId AND
+                    [StartDate] = @StartDate";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSalesTerritoryHistory(this IDbConnection conn, int BusinessEntityId, int TerritoryId, DateTime StartDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SalesTerritoryHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [TerritoryID] = @TerritoryId AND
+                    [StartDate] = @StartDate";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId, TerritoryId, StartDate }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SalesTerritoryHistory
 
         #region ScrapReason
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveScrapReason(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ScrapReasonId == default(short))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertScrapReason(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateScrapReason(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveScrapReason_by_Name(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertScrapReason(e, transaction, commandTimeout);
+            else
+                conn.UpdateScrapReason_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertScrapReason(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[ScrapReason]
@@ -3190,7 +5859,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateScrapReason(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[ScrapReason] SET
@@ -3200,23 +5869,83 @@ namespace MyNamespace.Crud
                     [ScrapReasonID] = @ScrapReasonId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateScrapReason_by_Name(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ScrapReason] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteScrapReason(this IDbConnection conn, ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ScrapReason]
+                WHERE
+                    [ScrapReasonID] = @ScrapReasonId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteScrapReason(this IDbConnection conn, short ScrapReasonId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[ScrapReason]
+                WHERE
+                    [ScrapReasonID] = @ScrapReasonId";
+            int deleted = conn.Execute(cmd, new { ScrapReasonId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ScrapReason
 
         #region Shift
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveShift(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ShiftId == default(byte))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertShift(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateShift(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveShift_by_Name(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertShift(e, transaction, commandTimeout);
+            else
+                conn.UpdateShift_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveShift_by_StartTime_EndTime(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.StartTime == default(DateTime) && e.EndTime == default(DateTime))
+                conn.InsertShift(e, transaction, commandTimeout);
+            else
+                conn.UpdateShift_by_StartTime_EndTime(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertShift(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [HumanResources].[Shift]
@@ -3238,7 +5967,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateShift(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [HumanResources].[Shift] SET
@@ -3250,23 +5979,102 @@ namespace MyNamespace.Crud
                     [ShiftID] = @ShiftId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateShift_by_Name(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Shift] SET
+                    [EndTime] = @EndTime,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StartTime] = @StartTime
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateShift_by_StartTime_EndTime(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Shift] SET
+                    [EndTime] = @EndTime,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StartTime] = @StartTime
+                WHERE
+                    [StartTime] = @StartTime AND
+                    [EndTime] = @EndTime";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteShift(this IDbConnection conn, Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[Shift]
+                WHERE
+                    [ShiftID] = @ShiftId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteShift(this IDbConnection conn, byte ShiftId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [HumanResources].[Shift]
+                WHERE
+                    [ShiftID] = @ShiftId";
+            int deleted = conn.Execute(cmd, new { ShiftId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Shift
 
         #region ShipMethod
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveShipMethod(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ShipMethodId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertShipMethod(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateShipMethod(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveShipMethod_by_Name(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertShipMethod(e, transaction, commandTimeout);
+            else
+                conn.UpdateShipMethod_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveShipMethod_by_rowguid(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertShipMethod(e, transaction, commandTimeout);
+            else
+                conn.UpdateShipMethod_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertShipMethod(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Purchasing].[ShipMethod]
@@ -3288,7 +6096,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateShipMethod(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Purchasing].[ShipMethod] SET
@@ -3300,23 +6108,79 @@ namespace MyNamespace.Crud
                     [ShipMethodID] = @ShipMethodId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateShipMethod_by_Name(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Purchasing].[ShipMethod] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ShipBase] = @ShipBase,
+                    [ShipRate] = @ShipRate
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateShipMethod_by_rowguid(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Purchasing].[ShipMethod] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ShipBase] = @ShipBase,
+                    [ShipRate] = @ShipRate
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteShipMethod(this IDbConnection conn, ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[ShipMethod]
+                WHERE
+                    [ShipMethodID] = @ShipMethodId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteShipMethod(this IDbConnection conn, int ShipMethodId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[ShipMethod]
+                WHERE
+                    [ShipMethodID] = @ShipMethodId";
+            int deleted = conn.Execute(cmd, new { ShipMethodId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ShipMethod
 
         #region ShoppingCartItem
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, ShoppingCartItem e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveShoppingCartItem(this IDbConnection conn, ShoppingCartItem e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.ShoppingCartItemId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertShoppingCartItem(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateShoppingCartItem(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, ShoppingCartItem e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertShoppingCartItem(this IDbConnection conn, ShoppingCartItem e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[ShoppingCartItem]
@@ -3340,7 +6204,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, ShoppingCartItem e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateShoppingCartItem(this IDbConnection conn, ShoppingCartItem e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[ShoppingCartItem] SET
@@ -3353,23 +6217,58 @@ namespace MyNamespace.Crud
                     [ShoppingCartItemID] = @ShoppingCartItemId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteShoppingCartItem(this IDbConnection conn, ShoppingCartItem e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[ShoppingCartItem]
+                WHERE
+                    [ShoppingCartItemID] = @ShoppingCartItemId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteShoppingCartItem(this IDbConnection conn, int ShoppingCartItemId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[ShoppingCartItem]
+                WHERE
+                    [ShoppingCartItemID] = @ShoppingCartItemId";
+            int deleted = conn.Execute(cmd, new { ShoppingCartItemId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion ShoppingCartItem
 
         #region SpecialOffer
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSpecialOffer(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.SpecialOfferId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSpecialOffer(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSpecialOffer(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSpecialOffer_by_rowguid(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSpecialOffer(e, transaction, commandTimeout);
+            else
+                conn.UpdateSpecialOffer_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSpecialOffer(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SpecialOffer]
@@ -3401,7 +6300,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSpecialOffer(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SpecialOffer] SET
@@ -3418,23 +6317,79 @@ namespace MyNamespace.Crud
                     [SpecialOfferID] = @SpecialOfferId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSpecialOffer_by_rowguid(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SpecialOffer] SET
+                    [Category] = @Category,
+                    [Description] = @Description,
+                    [DiscountPct] = @DiscountPct,
+                    [EndDate] = @EndDate,
+                    [MaxQty] = @MaxQty,
+                    [MinQty] = @MinQty,
+                    [ModifiedDate] = @ModifiedDate,
+                    [StartDate] = @StartDate,
+                    [Type] = @Type
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSpecialOffer(this IDbConnection conn, SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SpecialOffer]
+                WHERE
+                    [SpecialOfferID] = @SpecialOfferId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSpecialOffer(this IDbConnection conn, int SpecialOfferId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SpecialOffer]
+                WHERE
+                    [SpecialOfferID] = @SpecialOfferId";
+            int deleted = conn.Execute(cmd, new { SpecialOfferId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SpecialOffer
 
         #region SpecialOfferProduct
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveSpecialOfferProduct(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.SpecialOfferId == default(int) && e.ProductId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertSpecialOfferProduct(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateSpecialOfferProduct(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveSpecialOfferProduct_by_rowguid(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertSpecialOfferProduct(e, transaction, commandTimeout);
+            else
+                conn.UpdateSpecialOfferProduct_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertSpecialOfferProduct(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[SpecialOfferProduct]
@@ -3454,7 +6409,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateSpecialOfferProduct(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[SpecialOfferProduct] SET
@@ -3466,23 +6421,97 @@ namespace MyNamespace.Crud
                     [ProductID] = @ProductId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateSpecialOfferProduct_by_rowguid(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SpecialOfferProduct] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [ProductID] = @ProductId,
+                    [SpecialOfferID] = @SpecialOfferId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteSpecialOfferProduct(this IDbConnection conn, SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SpecialOfferProduct]
+                WHERE
+                    [SpecialOfferID] = @SpecialOfferId AND
+                    [ProductID] = @ProductId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteSpecialOfferProduct(this IDbConnection conn, int SpecialOfferId, int ProductId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[SpecialOfferProduct]
+                WHERE
+                    [SpecialOfferID] = @SpecialOfferId AND
+                    [ProductID] = @ProductId";
+            int deleted = conn.Execute(cmd, new { SpecialOfferId, ProductId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion SpecialOfferProduct
 
         #region StateProvince
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveStateProvince(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.StateProvinceId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertStateProvince(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateStateProvince(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveStateProvince_by_Name(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertStateProvince(e, transaction, commandTimeout);
+            else
+                conn.UpdateStateProvince_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveStateProvince_by_rowguid(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertStateProvince(e, transaction, commandTimeout);
+            else
+                conn.UpdateStateProvince_by_rowguid(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveStateProvince_by_StateProvinceCode_CountryRegionCode(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.StateProvinceCode == null && e.CountryRegionCode == null)
+                conn.InsertStateProvince(e, transaction, commandTimeout);
+            else
+                conn.UpdateStateProvince_by_StateProvinceCode_CountryRegionCode(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertStateProvince(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Person].[StateProvince]
@@ -3508,7 +6537,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateStateProvince(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Person].[StateProvince] SET
@@ -3522,23 +6551,113 @@ namespace MyNamespace.Crud
                     [StateProvinceID] = @StateProvinceId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateStateProvince_by_Name(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[StateProvince] SET
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [IsOnlyStateProvinceFlag] = @IsOnlyStateProvinceFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceCode] = @StateProvinceCode,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateStateProvince_by_rowguid(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[StateProvince] SET
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [IsOnlyStateProvinceFlag] = @IsOnlyStateProvinceFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceCode] = @StateProvinceCode,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateStateProvince_by_StateProvinceCode_CountryRegionCode(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[StateProvince] SET
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [IsOnlyStateProvinceFlag] = @IsOnlyStateProvinceFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceCode] = @StateProvinceCode,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [StateProvinceCode] = @StateProvinceCode AND
+                    [CountryRegionCode] = @CountryRegionCode";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteStateProvince(this IDbConnection conn, StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[StateProvince]
+                WHERE
+                    [StateProvinceID] = @StateProvinceId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteStateProvince(this IDbConnection conn, int StateProvinceId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Person].[StateProvince]
+                WHERE
+                    [StateProvinceID] = @StateProvinceId";
+            int deleted = conn.Execute(cmd, new { StateProvinceId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion StateProvince
 
         #region Store
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveStore(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertStore(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateStore(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveStore_by_rowguid(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                conn.InsertStore(e, transaction, commandTimeout);
+            else
+                conn.UpdateStore_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertStore(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Sales].[Store]
@@ -3562,7 +6681,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateStore(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Sales].[Store] SET
@@ -3575,23 +6694,64 @@ namespace MyNamespace.Crud
                     [BusinessEntityID] = @BusinessEntityId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateStore_by_rowguid(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[Store] SET
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [Demographics] = @Demographics,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [SalesPersonID] = @SalesPersonId
+                WHERE
+                    [rowguid] = @Rowguid";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteStore(this IDbConnection conn, Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[Store]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteStore(this IDbConnection conn, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Sales].[Store]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Store
 
         #region TransactionHistory
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, TransactionHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveTransactionHistory(this IDbConnection conn, TransactionHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.TransactionId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertTransactionHistory(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateTransactionHistory(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, TransactionHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertTransactionHistory(this IDbConnection conn, TransactionHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[TransactionHistory]
@@ -3621,7 +6781,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, TransactionHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateTransactionHistory(this IDbConnection conn, TransactionHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[TransactionHistory] SET
@@ -3637,23 +6797,47 @@ namespace MyNamespace.Crud
                     [TransactionID] = @TransactionId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteTransactionHistory(this IDbConnection conn, TransactionHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[TransactionHistory]
+                WHERE
+                    [TransactionID] = @TransactionId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteTransactionHistory(this IDbConnection conn, int TransactionId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[TransactionHistory]
+                WHERE
+                    [TransactionID] = @TransactionId";
+            int deleted = conn.Execute(cmd, new { TransactionId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion TransactionHistory
 
         #region TransactionHistoryArchive
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, TransactionHistoryArchive e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveTransactionHistoryArchive(this IDbConnection conn, TransactionHistoryArchive e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.TransactionId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertTransactionHistoryArchive(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateTransactionHistoryArchive(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, TransactionHistoryArchive e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertTransactionHistoryArchive(this IDbConnection conn, TransactionHistoryArchive e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[TransactionHistoryArchive]
@@ -3685,7 +6869,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, TransactionHistoryArchive e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateTransactionHistoryArchive(this IDbConnection conn, TransactionHistoryArchive e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[TransactionHistoryArchive] SET
@@ -3702,23 +6886,58 @@ namespace MyNamespace.Crud
                     [TransactionID] = @TransactionId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteTransactionHistoryArchive(this IDbConnection conn, TransactionHistoryArchive e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[TransactionHistoryArchive]
+                WHERE
+                    [TransactionID] = @TransactionId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteTransactionHistoryArchive(this IDbConnection conn, int TransactionId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[TransactionHistoryArchive]
+                WHERE
+                    [TransactionID] = @TransactionId";
+            int deleted = conn.Execute(cmd, new { TransactionId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion TransactionHistoryArchive
 
         #region UnitMeasure
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveUnitMeasure(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.UnitMeasureCode == null)
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertUnitMeasure(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateUnitMeasure(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveUnitMeasure_by_Name(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                conn.InsertUnitMeasure(e, transaction, commandTimeout);
+            else
+                conn.UpdateUnitMeasure_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertUnitMeasure(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[UnitMeasure]
@@ -3738,7 +6957,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateUnitMeasure(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[UnitMeasure] SET
@@ -3749,23 +6968,73 @@ namespace MyNamespace.Crud
                     [UnitMeasureCode] = @UnitMeasureCode";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateUnitMeasure_by_Name(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[UnitMeasure] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [UnitMeasureCode] = @UnitMeasureCode
+                WHERE
+                    [Name] = @Name";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteUnitMeasure(this IDbConnection conn, UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[UnitMeasure]
+                WHERE
+                    [UnitMeasureCode] = @UnitMeasureCode";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteUnitMeasure(this IDbConnection conn, string UnitMeasureCode, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[UnitMeasure]
+                WHERE
+                    [UnitMeasureCode] = @UnitMeasureCode";
+            int deleted = conn.Execute(cmd, new { UnitMeasureCode }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion UnitMeasure
 
         #region Vendor
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveVendor(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.BusinessEntityId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertVendor(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateVendor(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public static void SaveVendor_by_AccountNumber(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.AccountNumber == null)
+                conn.InsertVendor(e, transaction, commandTimeout);
+            else
+                conn.UpdateVendor_by_AccountNumber(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertVendor(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Purchasing].[Vendor]
@@ -3795,7 +7064,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateVendor(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Purchasing].[Vendor] SET
@@ -3811,23 +7080,67 @@ namespace MyNamespace.Crud
                     [BusinessEntityID] = @BusinessEntityId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public static void UpdateVendor_by_AccountNumber(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Purchasing].[Vendor] SET
+                    [AccountNumber] = @AccountNumber,
+                    [ActiveFlag] = @ActiveFlag,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CreditRating] = @CreditRating,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [PreferredVendorStatus] = @PreferredVendorStatus,
+                    [PurchasingWebServiceURL] = @PurchasingWebServiceUrl
+                WHERE
+                    [AccountNumber] = @AccountNumber";
+            conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteVendor(this IDbConnection conn, Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[Vendor]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteVendor(this IDbConnection conn, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Purchasing].[Vendor]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            int deleted = conn.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion Vendor
 
         #region WorkOrder
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, WorkOrder e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveWorkOrder(this IDbConnection conn, WorkOrder e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.WorkOrderId == default(int))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertWorkOrder(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateWorkOrder(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, WorkOrder e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertWorkOrder(this IDbConnection conn, WorkOrder e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[WorkOrder]
@@ -3857,7 +7170,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, WorkOrder e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateWorkOrder(this IDbConnection conn, WorkOrder e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[WorkOrder] SET
@@ -3873,23 +7186,47 @@ namespace MyNamespace.Crud
                     [WorkOrderID] = @WorkOrderId";
             conn.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteWorkOrder(this IDbConnection conn, WorkOrder e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[WorkOrder]
+                WHERE
+                    [WorkOrderID] = @WorkOrderId";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteWorkOrder(this IDbConnection conn, int WorkOrderId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[WorkOrder]
+                WHERE
+                    [WorkOrderID] = @WorkOrderId";
+            int deleted = conn.Execute(cmd, new { WorkOrderId }, transaction, commandTimeout);
+            return deleted > 0;
+        }
         #endregion WorkOrder
 
         #region WorkOrderRouting
         /// <summary>
         /// Saves (if new) or Updates (if existing)
         /// </summary>
-        public static void Save(this IDbConnection conn, WorkOrderRouting e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void SaveWorkOrderRouting(this IDbConnection conn, WorkOrderRouting e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             if (e.WorkOrderId == default(int) && e.ProductId == default(int) && e.OperationSequence == default(short))
-                conn.Insert(e, transaction, commandTimeout);
+                conn.InsertWorkOrderRouting(e, transaction, commandTimeout);
             else
-                conn.Update(e, transaction, commandTimeout);
+                conn.UpdateWorkOrderRouting(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
         /// </summary>
-        public static void Insert(this IDbConnection conn, WorkOrderRouting e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void InsertWorkOrderRouting(this IDbConnection conn, WorkOrderRouting e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 INSERT INTO [Production].[WorkOrderRouting]
@@ -3927,7 +7264,7 @@ namespace MyNamespace.Crud
         /// <summary>
         /// Updates existing record
         /// </summary>
-        public static void Update(this IDbConnection conn, WorkOrderRouting e, IDbTransaction transaction = null, int? commandTimeout = null)
+        public static void UpdateWorkOrderRouting(this IDbConnection conn, WorkOrderRouting e, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             string cmd = @"
                 UPDATE [Production].[WorkOrderRouting] SET
@@ -3948,6 +7285,34 @@ namespace MyNamespace.Crud
                     [ProductID] = @ProductId AND
                     [OperationSequence] = @OperationSequence";
             conn.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public static bool DeleteWorkOrderRouting(this IDbConnection conn, WorkOrderRouting e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[WorkOrderRouting]
+                WHERE
+                    [WorkOrderID] = @WorkOrderId AND
+                    [ProductID] = @ProductId AND
+                    [OperationSequence] = @OperationSequence";
+            int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+            return deleted > 0;
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public static bool DeleteWorkOrderRouting(this IDbConnection conn, int WorkOrderId, int ProductId, short OperationSequence, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE [Production].[WorkOrderRouting]
+                WHERE
+                    [WorkOrderID] = @WorkOrderId AND
+                    [ProductID] = @ProductId AND
+                    [OperationSequence] = @OperationSequence";
+            int deleted = conn.Execute(cmd, new { WorkOrderId, ProductId, OperationSequence }, transaction, commandTimeout);
+            return deleted > 0;
         }
         #endregion WorkOrderRouting
     }

@@ -23,7 +23,7 @@ namespace MyNamespace
         public DataAccessLayer()
         {
         }
-        public DataAccessLayer(string connectionString) :this
+        public DataAccessLayer(string connectionString) : this()
         {
             _connectionString = connectionString;
         }
@@ -63,6 +63,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_AddressLine1_AddressLine2_City_StateProvinceID_PostalCode(Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.AddressLine1 == null && e.AddressLine2 == null && e.City == null && e.StateProvinceId == default(int) && e.PostalCode == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_AddressLine1_AddressLine2_City_StateProvinceID_PostalCode(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -107,6 +129,68 @@ namespace MyNamespace
                     [AddressID] = @AddressId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[Address] SET
+                    [AddressLine1] = @AddressLine1,
+                    [AddressLine2] = @AddressLine2,
+                    [City] = @City,
+                    [ModifiedDate] = @ModifiedDate,
+                    [PostalCode] = @PostalCode,
+                    [StateProvinceID] = @StateProvinceId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_AddressLine1_AddressLine2_City_StateProvinceID_PostalCode(Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[Address] SET
+                    [AddressLine1] = @AddressLine1,
+                    [AddressLine2] = @AddressLine2,
+                    [City] = @City,
+                    [ModifiedDate] = @ModifiedDate,
+                    [PostalCode] = @PostalCode,
+                    [StateProvinceID] = @StateProvinceId
+                WHERE
+                    [AddressLine1] = @AddressLine1 AND
+                    [AddressLine2] = @AddressLine2 AND
+                    [City] = @City AND
+                    [StateProvinceID] = @StateProvinceId AND
+                    [PostalCode] = @PostalCode";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Address e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[Address]
+                WHERE
+                    [AddressID] = @AddressId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteAddress(int AddressId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[Address]
+                WHERE
+                    [AddressID] = @AddressId";
+            this.Execute(cmd, new { AddressId }, transaction, commandTimeout);
+        }
         #endregion Address
 
         #region AddressType
@@ -119,6 +203,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -150,6 +256,56 @@ namespace MyNamespace
                 WHERE
                     [AddressTypeID] = @AddressTypeId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[AddressType] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[AddressType] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(AddressType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[AddressType]
+                WHERE
+                    [AddressTypeID] = @AddressTypeId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteAddressType(int AddressTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[AddressType]
+                WHERE
+                    [AddressTypeID] = @AddressTypeId";
+            this.Execute(cmd, new { AddressTypeId }, transaction, commandTimeout);
         }
         #endregion AddressType
 
@@ -198,6 +354,28 @@ namespace MyNamespace
                     [SystemInformationID] = @SystemInformationId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(AWBuildVersion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [AWBuildVersion]
+                WHERE
+                    [SystemInformationID] = @SystemInformationId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteAWBuildVersion(byte SystemInformationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [AWBuildVersion]
+                WHERE
+                    [SystemInformationID] = @SystemInformationId";
+            this.Execute(cmd, new { SystemInformationId }, transaction, commandTimeout);
+        }
         #endregion AWBuildVersion
 
         #region BillOfMaterials
@@ -210,6 +388,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_ProductAssemblyID_ComponentID_StartDate(BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.ProductAssemblyId == null && e.ComponentId == default(int) && e.StartDate == default(DateTime))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_ProductAssemblyID_ComponentID_StartDate(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -260,6 +449,50 @@ namespace MyNamespace
                     [BillOfMaterialsID] = @BillOfMaterialsId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_ProductAssemblyID_ComponentID_StartDate(BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[BillOfMaterials] SET
+                    [BOMLevel] = @BomLevel,
+                    [ComponentID] = @ComponentId,
+                    [EndDate] = @EndDate,
+                    [ModifiedDate] = @ModifiedDate,
+                    [PerAssemblyQty] = @PerAssemblyQty,
+                    [ProductAssemblyID] = @ProductAssemblyId,
+                    [StartDate] = @StartDate,
+                    [UnitMeasureCode] = @UnitMeasureCode
+                WHERE
+                    [ProductAssemblyID] = @ProductAssemblyId AND
+                    [ComponentID] = @ComponentId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(BillOfMaterials e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[BillOfMaterials]
+                WHERE
+                    [BillOfMaterialsID] = @BillOfMaterialsId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteBillOfMaterials(int BillOfMaterialsId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[BillOfMaterials]
+                WHERE
+                    [BillOfMaterialsID] = @BillOfMaterialsId";
+            this.Execute(cmd, new { BillOfMaterialsId }, transaction, commandTimeout);
+        }
         #endregion BillOfMaterials
 
         #region BusinessEntity
@@ -272,6 +505,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -301,6 +545,41 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[BusinessEntity] SET
+                    [ModifiedDate] = @ModifiedDate
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(BusinessEntity e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[BusinessEntity]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteBusinessEntity(int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[BusinessEntity]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+        }
         #endregion BusinessEntity
 
         #region BusinessEntityAddress
@@ -313,6 +592,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -353,6 +643,48 @@ namespace MyNamespace
                     [AddressTypeID] = @AddressTypeId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[BusinessEntityAddress] SET
+                    [AddressID] = @AddressId,
+                    [AddressTypeID] = @AddressTypeId,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [ModifiedDate] = @ModifiedDate
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(BusinessEntityAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[BusinessEntityAddress]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [AddressID] = @AddressId AND
+                    [AddressTypeID] = @AddressTypeId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteBusinessEntityAddress(int BusinessEntityId, int AddressId, int AddressTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[BusinessEntityAddress]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [AddressID] = @AddressId AND
+                    [AddressTypeID] = @AddressTypeId";
+            this.Execute(cmd, new { BusinessEntityId, AddressId, AddressTypeId }, transaction, commandTimeout);
+        }
         #endregion BusinessEntityAddress
 
         #region BusinessEntityContact
@@ -365,6 +697,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -405,6 +748,48 @@ namespace MyNamespace
                     [ContactTypeID] = @ContactTypeId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[BusinessEntityContact] SET
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [ContactTypeID] = @ContactTypeId,
+                    [ModifiedDate] = @ModifiedDate,
+                    [PersonID] = @PersonId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(BusinessEntityContact e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[BusinessEntityContact]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [PersonID] = @PersonId AND
+                    [ContactTypeID] = @ContactTypeId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteBusinessEntityContact(int BusinessEntityId, int PersonId, int ContactTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[BusinessEntityContact]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [PersonID] = @PersonId AND
+                    [ContactTypeID] = @ContactTypeId";
+            this.Execute(cmd, new { BusinessEntityId, PersonId, ContactTypeId }, transaction, commandTimeout);
+        }
         #endregion BusinessEntityContact
 
         #region ContactType
@@ -417,6 +802,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -449,6 +845,42 @@ namespace MyNamespace
                     [ContactTypeID] = @ContactTypeId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[ContactType] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ContactType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[ContactType]
+                WHERE
+                    [ContactTypeID] = @ContactTypeId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteContactType(int ContactTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[ContactType]
+                WHERE
+                    [ContactTypeID] = @ContactTypeId";
+            this.Execute(cmd, new { ContactTypeId }, transaction, commandTimeout);
+        }
         #endregion ContactType
 
         #region CountryRegion
@@ -461,6 +893,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -495,6 +938,43 @@ namespace MyNamespace
                 WHERE
                     [CountryRegionCode] = @CountryRegionCode";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[CountryRegion] SET
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(CountryRegion e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[CountryRegion]
+                WHERE
+                    [CountryRegionCode] = @CountryRegionCode";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteCountryRegion(string CountryRegionCode, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[CountryRegion]
+                WHERE
+                    [CountryRegionCode] = @CountryRegionCode";
+            this.Execute(cmd, new { CountryRegionCode }, transaction, commandTimeout);
         }
         #endregion CountryRegion
 
@@ -544,6 +1024,30 @@ namespace MyNamespace
                     [CurrencyCode] = @CurrencyCode";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(CountryRegionCurrency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[CountryRegionCurrency]
+                WHERE
+                    [CountryRegionCode] = @CountryRegionCode AND
+                    [CurrencyCode] = @CurrencyCode";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteCountryRegionCurrency(string CountryRegionCode, string CurrencyCode, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[CountryRegionCurrency]
+                WHERE
+                    [CountryRegionCode] = @CountryRegionCode AND
+                    [CurrencyCode] = @CurrencyCode";
+            this.Execute(cmd, new { CountryRegionCode, CurrencyCode }, transaction, commandTimeout);
+        }
         #endregion CountryRegionCurrency
 
         #region CreditCard
@@ -556,6 +1060,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_CardNumber(CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.CardNumber == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_CardNumber(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -597,6 +1112,45 @@ namespace MyNamespace
                     [CreditCardID] = @CreditCardId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_CardNumber(CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[CreditCard] SET
+                    [CardNumber] = @CardNumber,
+                    [CardType] = @CardType,
+                    [ExpMonth] = @ExpMonth,
+                    [ExpYear] = @ExpYear,
+                    [ModifiedDate] = @ModifiedDate
+                WHERE
+                    [CardNumber] = @CardNumber";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(CreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[CreditCard]
+                WHERE
+                    [CreditCardID] = @CreditCardId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteCreditCard(int CreditCardId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[CreditCard]
+                WHERE
+                    [CreditCardID] = @CreditCardId";
+            this.Execute(cmd, new { CreditCardId }, transaction, commandTimeout);
+        }
         #endregion CreditCard
 
         #region Culture
@@ -609,6 +1163,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -644,6 +1209,43 @@ namespace MyNamespace
                     [CultureID] = @CultureId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Culture] SET
+                    [CultureID] = @CultureId,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Culture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[Culture]
+                WHERE
+                    [CultureID] = @CultureId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteCulture(string CultureId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[Culture]
+                WHERE
+                    [CultureID] = @CultureId";
+            this.Execute(cmd, new { CultureId }, transaction, commandTimeout);
+        }
         #endregion Culture
 
         #region Currency
@@ -656,6 +1258,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -691,6 +1304,43 @@ namespace MyNamespace
                     [CurrencyCode] = @CurrencyCode";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[Currency] SET
+                    [CurrencyCode] = @CurrencyCode,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Currency e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[Currency]
+                WHERE
+                    [CurrencyCode] = @CurrencyCode";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteCurrency(string CurrencyCode, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[Currency]
+                WHERE
+                    [CurrencyCode] = @CurrencyCode";
+            this.Execute(cmd, new { CurrencyCode }, transaction, commandTimeout);
+        }
         #endregion Currency
 
         #region CurrencyRate
@@ -703,6 +1353,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_CurrencyRateDate_FromCurrencyCode_ToCurrencyCode(CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.CurrencyRateDate == default(DateTime) && e.FromCurrencyCode == null && e.ToCurrencyCode == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_CurrencyRateDate_FromCurrencyCode_ToCurrencyCode(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -747,6 +1408,48 @@ namespace MyNamespace
                     [CurrencyRateID] = @CurrencyRateId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_CurrencyRateDate_FromCurrencyCode_ToCurrencyCode(CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[CurrencyRate] SET
+                    [AverageRate] = @AverageRate,
+                    [CurrencyRateDate] = @CurrencyRateDate,
+                    [EndOfDayRate] = @EndOfDayRate,
+                    [FromCurrencyCode] = @FromCurrencyCode,
+                    [ModifiedDate] = @ModifiedDate,
+                    [ToCurrencyCode] = @ToCurrencyCode
+                WHERE
+                    [CurrencyRateDate] = @CurrencyRateDate AND
+                    [FromCurrencyCode] = @FromCurrencyCode AND
+                    [ToCurrencyCode] = @ToCurrencyCode";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(CurrencyRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[CurrencyRate]
+                WHERE
+                    [CurrencyRateID] = @CurrencyRateId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteCurrencyRate(int CurrencyRateId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[CurrencyRate]
+                WHERE
+                    [CurrencyRateID] = @CurrencyRateId";
+            this.Execute(cmd, new { CurrencyRateId }, transaction, commandTimeout);
+        }
         #endregion CurrencyRate
 
         #region Customer
@@ -759,6 +1462,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_AccountNumber(Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.AccountNumber == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_AccountNumber(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -796,6 +1521,60 @@ namespace MyNamespace
                 WHERE
                     [CustomerID] = @CustomerId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_AccountNumber(Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[Customer] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [PersonID] = @PersonId,
+                    [StoreID] = @StoreId,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [AccountNumber] = @AccountNumber";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[Customer] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [PersonID] = @PersonId,
+                    [StoreID] = @StoreId,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Customer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[Customer]
+                WHERE
+                    [CustomerID] = @CustomerId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteCustomer(int CustomerId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[Customer]
+                WHERE
+                    [CustomerID] = @CustomerId";
+            this.Execute(cmd, new { CustomerId }, transaction, commandTimeout);
         }
         #endregion Customer
 
@@ -856,6 +1635,28 @@ namespace MyNamespace
                     [DatabaseLogID] = @DatabaseLogId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(DatabaseLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [DatabaseLog]
+                WHERE
+                    [DatabaseLogID] = @DatabaseLogId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteDatabaseLog(int DatabaseLogId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [DatabaseLog]
+                WHERE
+                    [DatabaseLogID] = @DatabaseLogId";
+            this.Execute(cmd, new { DatabaseLogId }, transaction, commandTimeout);
+        }
         #endregion DatabaseLog
 
         #region Department
@@ -868,6 +1669,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -902,6 +1714,43 @@ namespace MyNamespace
                 WHERE
                     [DepartmentID] = @DepartmentId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Department] SET
+                    [GroupName] = @GroupName,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Department e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[Department]
+                WHERE
+                    [DepartmentID] = @DepartmentId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteDepartment(short DepartmentId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[Department]
+                WHERE
+                    [DepartmentID] = @DepartmentId";
+            this.Execute(cmd, new { DepartmentId }, transaction, commandTimeout);
         }
         #endregion Department
 
@@ -943,28 +1792,8 @@ namespace MyNamespace
                 )";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
-        /// <summary>
-        /// Updates existing record
-        /// </summary>
-        public virtual void Update(Document e, IDbTransaction transaction = null, int? commandTimeout = null)
-        {
-            string cmd = @"
-                UPDATE [Production].[Document] SET
-                    [ChangeNumber] = @ChangeNumber,
-                    [Document] = @Document1,
-                    [DocumentSummary] = @DocumentSummary,
-                    [FileExtension] = @FileExtension,
-                    [FileName] = @FileName,
-                    [FolderFlag] = @FolderFlag,
-                    [ModifiedDate] = @ModifiedDate,
-                    [Owner] = @Owner,
-                    [Revision] = @Revision,
-                    [Status] = @Status,
-                    [Title] = @Title
-                WHERE
-                    ";
-            this.Execute(cmd, e, transaction, commandTimeout);
-        }
+
+
         #endregion Document
 
         #region EmailAddress
@@ -1013,6 +1842,30 @@ namespace MyNamespace
                     [EmailAddressID] = @EmailAddressId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(EmailAddress e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[EmailAddress]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [EmailAddressID] = @EmailAddressId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteEmailAddress(int BusinessEntityId, int EmailAddressId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[EmailAddress]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [EmailAddressID] = @EmailAddressId";
+            this.Execute(cmd, new { BusinessEntityId, EmailAddressId }, transaction, commandTimeout);
+        }
         #endregion EmailAddress
 
         #region Employee
@@ -1025,6 +1878,39 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_LoginID(Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.LoginId == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_LoginID(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_NationalIDNumber(Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.NationalIdNumber == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_NationalIDNumber(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -1090,6 +1976,103 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_LoginID(Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Employee] SET
+                    [BirthDate] = @BirthDate,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CurrentFlag] = @CurrentFlag,
+                    [Gender] = @Gender,
+                    [HireDate] = @HireDate,
+                    [JobTitle] = @JobTitle,
+                    [LoginID] = @LoginId,
+                    [MaritalStatus] = @MaritalStatus,
+                    [ModifiedDate] = @ModifiedDate,
+                    [NationalIDNumber] = @NationalIdNumber,
+                    [SalariedFlag] = @SalariedFlag,
+                    [SickLeaveHours] = @SickLeaveHours,
+                    [VacationHours] = @VacationHours
+                WHERE
+                    [LoginID] = @LoginId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_NationalIDNumber(Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Employee] SET
+                    [BirthDate] = @BirthDate,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CurrentFlag] = @CurrentFlag,
+                    [Gender] = @Gender,
+                    [HireDate] = @HireDate,
+                    [JobTitle] = @JobTitle,
+                    [LoginID] = @LoginId,
+                    [MaritalStatus] = @MaritalStatus,
+                    [ModifiedDate] = @ModifiedDate,
+                    [NationalIDNumber] = @NationalIdNumber,
+                    [SalariedFlag] = @SalariedFlag,
+                    [SickLeaveHours] = @SickLeaveHours,
+                    [VacationHours] = @VacationHours
+                WHERE
+                    [NationalIDNumber] = @NationalIdNumber";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Employee] SET
+                    [BirthDate] = @BirthDate,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CurrentFlag] = @CurrentFlag,
+                    [Gender] = @Gender,
+                    [HireDate] = @HireDate,
+                    [JobTitle] = @JobTitle,
+                    [LoginID] = @LoginId,
+                    [MaritalStatus] = @MaritalStatus,
+                    [ModifiedDate] = @ModifiedDate,
+                    [NationalIDNumber] = @NationalIdNumber,
+                    [SalariedFlag] = @SalariedFlag,
+                    [SickLeaveHours] = @SickLeaveHours,
+                    [VacationHours] = @VacationHours
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Employee e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[Employee]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteEmployee(int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[Employee]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+        }
         #endregion Employee
 
         #region EmployeeDepartmentHistory
@@ -1149,6 +2132,34 @@ namespace MyNamespace
                     [StartDate] = @StartDate";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(EmployeeDepartmentHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[EmployeeDepartmentHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [DepartmentID] = @DepartmentId AND
+                    [ShiftID] = @ShiftId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteEmployeeDepartmentHistory(int BusinessEntityId, short DepartmentId, byte ShiftId, DateTime StartDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[EmployeeDepartmentHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [DepartmentID] = @DepartmentId AND
+                    [ShiftID] = @ShiftId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, new { BusinessEntityId, DepartmentId, ShiftId, StartDate }, transaction, commandTimeout);
+        }
         #endregion EmployeeDepartmentHistory
 
         #region EmployeePayHistory
@@ -1202,6 +2213,30 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId AND
                     [RateChangeDate] = @RateChangeDate";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(EmployeePayHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[EmployeePayHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [RateChangeDate] = @RateChangeDate";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteEmployeePayHistory(int BusinessEntityId, DateTime RateChangeDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[EmployeePayHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [RateChangeDate] = @RateChangeDate";
+            this.Execute(cmd, new { BusinessEntityId, RateChangeDate }, transaction, commandTimeout);
         }
         #endregion EmployeePayHistory
 
@@ -1265,6 +2300,28 @@ namespace MyNamespace
                     [ErrorLogID] = @ErrorLogId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ErrorLog e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [ErrorLog]
+                WHERE
+                    [ErrorLogID] = @ErrorLogId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteErrorLog(int ErrorLogId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [ErrorLog]
+                WHERE
+                    [ErrorLogID] = @ErrorLogId";
+            this.Execute(cmd, new { ErrorLogId }, transaction, commandTimeout);
+        }
         #endregion ErrorLog
 
         #region Illustration
@@ -1308,6 +2365,28 @@ namespace MyNamespace
                 WHERE
                     [IllustrationID] = @IllustrationId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Illustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[Illustration]
+                WHERE
+                    [IllustrationID] = @IllustrationId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteIllustration(int IllustrationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[Illustration]
+                WHERE
+                    [IllustrationID] = @IllustrationId";
+            this.Execute(cmd, new { IllustrationId }, transaction, commandTimeout);
         }
         #endregion Illustration
 
@@ -1356,6 +2435,28 @@ namespace MyNamespace
                     [JobCandidateID] = @JobCandidateId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(JobCandidate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[JobCandidate]
+                WHERE
+                    [JobCandidateID] = @JobCandidateId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteJobCandidate(int JobCandidateId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[JobCandidate]
+                WHERE
+                    [JobCandidateID] = @JobCandidateId";
+            this.Execute(cmd, new { JobCandidateId }, transaction, commandTimeout);
+        }
         #endregion JobCandidate
 
         #region Location
@@ -1368,6 +2469,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -1405,6 +2517,44 @@ namespace MyNamespace
                 WHERE
                     [LocationID] = @LocationId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Location] SET
+                    [Availability] = @Availability,
+                    [CostRate] = @CostRate,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Location e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[Location]
+                WHERE
+                    [LocationID] = @LocationId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteLocation(short LocationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[Location]
+                WHERE
+                    [LocationID] = @LocationId";
+            this.Execute(cmd, new { LocationId }, transaction, commandTimeout);
         }
         #endregion Location
 
@@ -1456,6 +2606,28 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Password e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[Password]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeletePassword(int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[Password]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+        }
         #endregion Password
 
         #region Person
@@ -1468,6 +2640,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -1530,6 +2713,52 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[Person] SET
+                    [AdditionalContactInfo] = @AdditionalContactInfo,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [Demographics] = @Demographics,
+                    [EmailPromotion] = @EmailPromotion,
+                    [FirstName] = @FirstName,
+                    [LastName] = @LastName,
+                    [MiddleName] = @MiddleName,
+                    [ModifiedDate] = @ModifiedDate,
+                    [NameStyle] = @NameStyle,
+                    [PersonType] = @PersonType,
+                    [Suffix] = @Suffix,
+                    [Title] = @Title
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Person e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[Person]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeletePerson(int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[Person]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+        }
         #endregion Person
 
         #region PersonCreditCard
@@ -1577,6 +2806,30 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId AND
                     [CreditCardID] = @CreditCardId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(PersonCreditCard e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[PersonCreditCard]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [CreditCardID] = @CreditCardId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeletePersonCreditCard(int BusinessEntityId, int CreditCardId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[PersonCreditCard]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [CreditCardID] = @CreditCardId";
+            this.Execute(cmd, new { BusinessEntityId, CreditCardId }, transaction, commandTimeout);
         }
         #endregion PersonCreditCard
 
@@ -1630,6 +2883,32 @@ namespace MyNamespace
                     [PhoneNumberTypeID] = @PhoneNumberTypeId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(PersonPhone e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[PersonPhone]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [PhoneNumber] = @PhoneNumber AND
+                    [PhoneNumberTypeID] = @PhoneNumberTypeId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeletePersonPhone(int BusinessEntityId, string PhoneNumber, int PhoneNumberTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[PersonPhone]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [PhoneNumber] = @PhoneNumber AND
+                    [PhoneNumberTypeID] = @PhoneNumberTypeId";
+            this.Execute(cmd, new { BusinessEntityId, PhoneNumber, PhoneNumberTypeId }, transaction, commandTimeout);
+        }
         #endregion PersonPhone
 
         #region PhoneNumberType
@@ -1674,6 +2953,28 @@ namespace MyNamespace
                     [PhoneNumberTypeID] = @PhoneNumberTypeId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(PhoneNumberType e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[PhoneNumberType]
+                WHERE
+                    [PhoneNumberTypeID] = @PhoneNumberTypeId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeletePhoneNumberType(int PhoneNumberTypeId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[PhoneNumberType]
+                WHERE
+                    [PhoneNumberTypeID] = @PhoneNumberTypeId";
+            this.Execute(cmd, new { PhoneNumberTypeId }, transaction, commandTimeout);
+        }
         #endregion PhoneNumberType
 
         #region Product
@@ -1686,6 +2987,39 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_ProductNumber(Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.ProductNumber == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_ProductNumber(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -1781,6 +3115,133 @@ namespace MyNamespace
                     [ProductID] = @ProductId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Product] SET
+                    [Class] = @Class,
+                    [Color] = @Color,
+                    [DaysToManufacture] = @DaysToManufacture,
+                    [DiscontinuedDate] = @DiscontinuedDate,
+                    [FinishedGoodsFlag] = @FinishedGoodsFlag,
+                    [ListPrice] = @ListPrice,
+                    [MakeFlag] = @MakeFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductLine] = @ProductLine,
+                    [ProductModelID] = @ProductModelId,
+                    [ProductNumber] = @ProductNumber,
+                    [ProductSubcategoryID] = @ProductSubcategoryId,
+                    [ReorderPoint] = @ReorderPoint,
+                    [SafetyStockLevel] = @SafetyStockLevel,
+                    [SellEndDate] = @SellEndDate,
+                    [SellStartDate] = @SellStartDate,
+                    [Size] = @Size,
+                    [SizeUnitMeasureCode] = @SizeUnitMeasureCode,
+                    [StandardCost] = @StandardCost,
+                    [Style] = @Style,
+                    [Weight] = @Weight,
+                    [WeightUnitMeasureCode] = @WeightUnitMeasureCode
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_ProductNumber(Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Product] SET
+                    [Class] = @Class,
+                    [Color] = @Color,
+                    [DaysToManufacture] = @DaysToManufacture,
+                    [DiscontinuedDate] = @DiscontinuedDate,
+                    [FinishedGoodsFlag] = @FinishedGoodsFlag,
+                    [ListPrice] = @ListPrice,
+                    [MakeFlag] = @MakeFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductLine] = @ProductLine,
+                    [ProductModelID] = @ProductModelId,
+                    [ProductNumber] = @ProductNumber,
+                    [ProductSubcategoryID] = @ProductSubcategoryId,
+                    [ReorderPoint] = @ReorderPoint,
+                    [SafetyStockLevel] = @SafetyStockLevel,
+                    [SellEndDate] = @SellEndDate,
+                    [SellStartDate] = @SellStartDate,
+                    [Size] = @Size,
+                    [SizeUnitMeasureCode] = @SizeUnitMeasureCode,
+                    [StandardCost] = @StandardCost,
+                    [Style] = @Style,
+                    [Weight] = @Weight,
+                    [WeightUnitMeasureCode] = @WeightUnitMeasureCode
+                WHERE
+                    [ProductNumber] = @ProductNumber";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[Product] SET
+                    [Class] = @Class,
+                    [Color] = @Color,
+                    [DaysToManufacture] = @DaysToManufacture,
+                    [DiscontinuedDate] = @DiscontinuedDate,
+                    [FinishedGoodsFlag] = @FinishedGoodsFlag,
+                    [ListPrice] = @ListPrice,
+                    [MakeFlag] = @MakeFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductLine] = @ProductLine,
+                    [ProductModelID] = @ProductModelId,
+                    [ProductNumber] = @ProductNumber,
+                    [ProductSubcategoryID] = @ProductSubcategoryId,
+                    [ReorderPoint] = @ReorderPoint,
+                    [SafetyStockLevel] = @SafetyStockLevel,
+                    [SellEndDate] = @SellEndDate,
+                    [SellStartDate] = @SellStartDate,
+                    [Size] = @Size,
+                    [SizeUnitMeasureCode] = @SizeUnitMeasureCode,
+                    [StandardCost] = @StandardCost,
+                    [Style] = @Style,
+                    [Weight] = @Weight,
+                    [WeightUnitMeasureCode] = @WeightUnitMeasureCode
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Product e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[Product]
+                WHERE
+                    [ProductID] = @ProductId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProduct(int ProductId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[Product]
+                WHERE
+                    [ProductID] = @ProductId";
+            this.Execute(cmd, new { ProductId }, transaction, commandTimeout);
+        }
         #endregion Product
 
         #region ProductCategory
@@ -1793,6 +3254,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -1824,6 +3307,56 @@ namespace MyNamespace
                 WHERE
                     [ProductCategoryID] = @ProductCategoryId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductCategory] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductCategory] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductCategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductCategory]
+                WHERE
+                    [ProductCategoryID] = @ProductCategoryId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductCategory(int ProductCategoryId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductCategory]
+                WHERE
+                    [ProductCategoryID] = @ProductCategoryId";
+            this.Execute(cmd, new { ProductCategoryId }, transaction, commandTimeout);
         }
         #endregion ProductCategory
 
@@ -1879,6 +3412,30 @@ namespace MyNamespace
                     [StartDate] = @StartDate";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductCostHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductCostHistory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductCostHistory(int ProductId, DateTime StartDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductCostHistory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, new { ProductId, StartDate }, transaction, commandTimeout);
+        }
         #endregion ProductCostHistory
 
         #region ProductDescription
@@ -1891,6 +3448,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -1922,6 +3490,42 @@ namespace MyNamespace
                 WHERE
                     [ProductDescriptionID] = @ProductDescriptionId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductDescription] SET
+                    [Description] = @Description,
+                    [ModifiedDate] = @ModifiedDate
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductDescription e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductDescription]
+                WHERE
+                    [ProductDescriptionID] = @ProductDescriptionId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductDescription(int ProductDescriptionId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductDescription]
+                WHERE
+                    [ProductDescriptionID] = @ProductDescriptionId";
+            this.Execute(cmd, new { ProductDescriptionId }, transaction, commandTimeout);
         }
         #endregion ProductDescription
 
@@ -1966,6 +3570,28 @@ namespace MyNamespace
                 WHERE
                     [ProductID] = @ProductId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductDocument e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductDocument]
+                WHERE
+                    [ProductID] = @ProductId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductDocument(int ProductId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductDocument]
+                WHERE
+                    [ProductID] = @ProductId";
+            this.Execute(cmd, new { ProductId }, transaction, commandTimeout);
         }
         #endregion ProductDocument
 
@@ -2024,6 +3650,30 @@ namespace MyNamespace
                     [LocationID] = @LocationId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductInventory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductInventory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [LocationID] = @LocationId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductInventory(int ProductId, short LocationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductInventory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [LocationID] = @LocationId";
+            this.Execute(cmd, new { ProductId, LocationId }, transaction, commandTimeout);
+        }
         #endregion ProductInventory
 
         #region ProductListPriceHistory
@@ -2078,6 +3728,30 @@ namespace MyNamespace
                     [StartDate] = @StartDate";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductListPriceHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductListPriceHistory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductListPriceHistory(int ProductId, DateTime StartDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductListPriceHistory]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, new { ProductId, StartDate }, transaction, commandTimeout);
+        }
         #endregion ProductListPriceHistory
 
         #region ProductModel
@@ -2090,6 +3764,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -2127,6 +3823,60 @@ namespace MyNamespace
                 WHERE
                     [ProductModelID] = @ProductModelId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductModel] SET
+                    [CatalogDescription] = @CatalogDescription,
+                    [Instructions] = @Instructions,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductModel] SET
+                    [CatalogDescription] = @CatalogDescription,
+                    [Instructions] = @Instructions,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductModel e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductModel]
+                WHERE
+                    [ProductModelID] = @ProductModelId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductModel(int ProductModelId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductModel]
+                WHERE
+                    [ProductModelID] = @ProductModelId";
+            this.Execute(cmd, new { ProductModelId }, transaction, commandTimeout);
         }
         #endregion ProductModel
 
@@ -2175,6 +3925,30 @@ namespace MyNamespace
                     [ProductModelID] = @ProductModelId AND
                     [IllustrationID] = @IllustrationId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductModelIllustration e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductModelIllustration]
+                WHERE
+                    [ProductModelID] = @ProductModelId AND
+                    [IllustrationID] = @IllustrationId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductModelIllustration(int ProductModelId, int IllustrationId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductModelIllustration]
+                WHERE
+                    [ProductModelID] = @ProductModelId AND
+                    [IllustrationID] = @IllustrationId";
+            this.Execute(cmd, new { ProductModelId, IllustrationId }, transaction, commandTimeout);
         }
         #endregion ProductModelIllustration
 
@@ -2227,6 +4001,32 @@ namespace MyNamespace
                     [ProductDescriptionID] = @ProductDescriptionId AND
                     [CultureID] = @CultureId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductModelProductDescriptionCulture e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductModelProductDescriptionCulture]
+                WHERE
+                    [ProductModelID] = @ProductModelId AND
+                    [ProductDescriptionID] = @ProductDescriptionId AND
+                    [CultureID] = @CultureId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductModelProductDescriptionCulture(int ProductModelId, int ProductDescriptionId, string CultureId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductModelProductDescriptionCulture]
+                WHERE
+                    [ProductModelID] = @ProductModelId AND
+                    [ProductDescriptionID] = @ProductDescriptionId AND
+                    [CultureID] = @CultureId";
+            this.Execute(cmd, new { ProductModelId, ProductDescriptionId, CultureId }, transaction, commandTimeout);
         }
         #endregion ProductModelProductDescriptionCulture
 
@@ -2281,6 +4081,28 @@ namespace MyNamespace
                     [ProductPhotoID] = @ProductPhotoId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductPhoto]
+                WHERE
+                    [ProductPhotoID] = @ProductPhotoId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductPhoto(int ProductPhotoId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductPhoto]
+                WHERE
+                    [ProductPhotoID] = @ProductPhotoId";
+            this.Execute(cmd, new { ProductPhotoId }, transaction, commandTimeout);
+        }
         #endregion ProductPhoto
 
         #region ProductProductPhoto
@@ -2331,6 +4153,30 @@ namespace MyNamespace
                     [ProductID] = @ProductId AND
                     [ProductPhotoID] = @ProductPhotoId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductProductPhoto e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductProductPhoto]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [ProductPhotoID] = @ProductPhotoId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductProductPhoto(int ProductId, int ProductPhotoId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductProductPhoto]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [ProductPhotoID] = @ProductPhotoId";
+            this.Execute(cmd, new { ProductId, ProductPhotoId }, transaction, commandTimeout);
         }
         #endregion ProductProductPhoto
 
@@ -2391,6 +4237,28 @@ namespace MyNamespace
                     [ProductReviewID] = @ProductReviewId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductReview e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductReview]
+                WHERE
+                    [ProductReviewID] = @ProductReviewId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductReview(int ProductReviewId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductReview]
+                WHERE
+                    [ProductReviewID] = @ProductReviewId";
+            this.Execute(cmd, new { ProductReviewId }, transaction, commandTimeout);
+        }
         #endregion ProductReview
 
         #region ProductSubcategory
@@ -2403,6 +4271,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -2437,6 +4327,58 @@ namespace MyNamespace
                 WHERE
                     [ProductSubcategoryID] = @ProductSubcategoryId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductSubcategory] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductCategoryID] = @ProductCategoryId
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ProductSubcategory] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ProductCategoryID] = @ProductCategoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductSubcategory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductSubcategory]
+                WHERE
+                    [ProductSubcategoryID] = @ProductSubcategoryId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductSubcategory(int ProductSubcategoryId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ProductSubcategory]
+                WHERE
+                    [ProductSubcategoryID] = @ProductSubcategoryId";
+            this.Execute(cmd, new { ProductSubcategoryId }, transaction, commandTimeout);
         }
         #endregion ProductSubcategory
 
@@ -2510,6 +4452,30 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ProductVendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[ProductVendor]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteProductVendor(int ProductId, int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[ProductVendor]
+                WHERE
+                    [ProductID] = @ProductId AND
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, new { ProductId, BusinessEntityId }, transaction, commandTimeout);
+        }
         #endregion ProductVendor
 
         #region PurchaseOrderDetail
@@ -2572,6 +4538,30 @@ namespace MyNamespace
                     [PurchaseOrderID] = @PurchaseOrderId AND
                     [PurchaseOrderDetailID] = @PurchaseOrderDetailId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(PurchaseOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[PurchaseOrderDetail]
+                WHERE
+                    [PurchaseOrderID] = @PurchaseOrderId AND
+                    [PurchaseOrderDetailID] = @PurchaseOrderDetailId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeletePurchaseOrderDetail(int PurchaseOrderId, int PurchaseOrderDetailId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[PurchaseOrderDetail]
+                WHERE
+                    [PurchaseOrderID] = @PurchaseOrderId AND
+                    [PurchaseOrderDetailID] = @PurchaseOrderDetailId";
+            this.Execute(cmd, new { PurchaseOrderId, PurchaseOrderDetailId }, transaction, commandTimeout);
         }
         #endregion PurchaseOrderDetail
 
@@ -2644,6 +4634,28 @@ namespace MyNamespace
                     [PurchaseOrderID] = @PurchaseOrderId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(PurchaseOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[PurchaseOrderHeader]
+                WHERE
+                    [PurchaseOrderID] = @PurchaseOrderId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeletePurchaseOrderHeader(int PurchaseOrderId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[PurchaseOrderHeader]
+                WHERE
+                    [PurchaseOrderID] = @PurchaseOrderId";
+            this.Execute(cmd, new { PurchaseOrderId }, transaction, commandTimeout);
+        }
         #endregion PurchaseOrderHeader
 
         #region SalesOrderDetail
@@ -2656,6 +4668,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -2707,6 +4730,50 @@ namespace MyNamespace
                     [SalesOrderDetailID] = @SalesOrderDetailId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesOrderDetail] SET
+                    [CarrierTrackingNumber] = @CarrierTrackingNumber,
+                    [ModifiedDate] = @ModifiedDate,
+                    [OrderQty] = @OrderQty,
+                    [ProductID] = @ProductId,
+                    [SalesOrderID] = @SalesOrderId,
+                    [SpecialOfferID] = @SpecialOfferId,
+                    [UnitPrice] = @UnitPrice,
+                    [UnitPriceDiscount] = @UnitPriceDiscount
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesOrderDetail e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesOrderDetail]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId AND
+                    [SalesOrderDetailID] = @SalesOrderDetailId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesOrderDetail(int SalesOrderId, int SalesOrderDetailId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesOrderDetail]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId AND
+                    [SalesOrderDetailID] = @SalesOrderDetailId";
+            this.Execute(cmd, new { SalesOrderId, SalesOrderDetailId }, transaction, commandTimeout);
+        }
         #endregion SalesOrderDetail
 
         #region SalesOrderHeader
@@ -2719,6 +4786,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_SalesOrderNumber(SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.SalesOrderNumber == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_SalesOrderNumber(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -2811,6 +4900,96 @@ namespace MyNamespace
                     [SalesOrderID] = @SalesOrderId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesOrderHeader] SET
+                    [AccountNumber] = @AccountNumber,
+                    [BillToAddressID] = @BillToAddressId,
+                    [Comment] = @Comment,
+                    [CreditCardApprovalCode] = @CreditCardApprovalCode,
+                    [CreditCardID] = @CreditCardId,
+                    [CurrencyRateID] = @CurrencyRateId,
+                    [CustomerID] = @CustomerId,
+                    [DueDate] = @DueDate,
+                    [Freight] = @Freight,
+                    [ModifiedDate] = @ModifiedDate,
+                    [OnlineOrderFlag] = @OnlineOrderFlag,
+                    [OrderDate] = @OrderDate,
+                    [PurchaseOrderNumber] = @PurchaseOrderNumber,
+                    [RevisionNumber] = @RevisionNumber,
+                    [SalesPersonID] = @SalesPersonId,
+                    [ShipDate] = @ShipDate,
+                    [ShipMethodID] = @ShipMethodId,
+                    [ShipToAddressID] = @ShipToAddressId,
+                    [Status] = @Status,
+                    [SubTotal] = @SubTotal,
+                    [TaxAmt] = @TaxAmt,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_SalesOrderNumber(SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesOrderHeader] SET
+                    [AccountNumber] = @AccountNumber,
+                    [BillToAddressID] = @BillToAddressId,
+                    [Comment] = @Comment,
+                    [CreditCardApprovalCode] = @CreditCardApprovalCode,
+                    [CreditCardID] = @CreditCardId,
+                    [CurrencyRateID] = @CurrencyRateId,
+                    [CustomerID] = @CustomerId,
+                    [DueDate] = @DueDate,
+                    [Freight] = @Freight,
+                    [ModifiedDate] = @ModifiedDate,
+                    [OnlineOrderFlag] = @OnlineOrderFlag,
+                    [OrderDate] = @OrderDate,
+                    [PurchaseOrderNumber] = @PurchaseOrderNumber,
+                    [RevisionNumber] = @RevisionNumber,
+                    [SalesPersonID] = @SalesPersonId,
+                    [ShipDate] = @ShipDate,
+                    [ShipMethodID] = @ShipMethodId,
+                    [ShipToAddressID] = @ShipToAddressId,
+                    [Status] = @Status,
+                    [SubTotal] = @SubTotal,
+                    [TaxAmt] = @TaxAmt,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [SalesOrderNumber] = @SalesOrderNumber";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesOrderHeader e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesOrderHeader]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesOrderHeader(int SalesOrderId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesOrderHeader]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId";
+            this.Execute(cmd, new { SalesOrderId }, transaction, commandTimeout);
+        }
         #endregion SalesOrderHeader
 
         #region SalesOrderHeaderSalesReason
@@ -2859,6 +5038,30 @@ namespace MyNamespace
                     [SalesReasonID] = @SalesReasonId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesOrderHeaderSalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesOrderHeaderSalesReason]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId AND
+                    [SalesReasonID] = @SalesReasonId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesOrderHeaderSalesReason(int SalesOrderId, int SalesReasonId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesOrderHeaderSalesReason]
+                WHERE
+                    [SalesOrderID] = @SalesOrderId AND
+                    [SalesReasonID] = @SalesReasonId";
+            this.Execute(cmd, new { SalesOrderId, SalesReasonId }, transaction, commandTimeout);
+        }
         #endregion SalesOrderHeaderSalesReason
 
         #region SalesPerson
@@ -2871,6 +5074,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -2921,6 +5135,48 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesPerson] SET
+                    [Bonus] = @Bonus,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CommissionPct] = @CommissionPct,
+                    [ModifiedDate] = @ModifiedDate,
+                    [SalesLastYear] = @SalesLastYear,
+                    [SalesQuota] = @SalesQuota,
+                    [SalesYTD] = @SalesYtd,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesPerson e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesPerson]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesPerson(int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesPerson]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
+        }
         #endregion SalesPerson
 
         #region SalesPersonQuotaHistory
@@ -2933,6 +5189,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -2971,6 +5238,46 @@ namespace MyNamespace
                     [BusinessEntityID] = @BusinessEntityId AND
                     [QuotaDate] = @QuotaDate";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesPersonQuotaHistory] SET
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [ModifiedDate] = @ModifiedDate,
+                    [QuotaDate] = @QuotaDate,
+                    [SalesQuota] = @SalesQuota
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesPersonQuotaHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesPersonQuotaHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [QuotaDate] = @QuotaDate";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesPersonQuotaHistory(int BusinessEntityId, DateTime QuotaDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesPersonQuotaHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [QuotaDate] = @QuotaDate";
+            this.Execute(cmd, new { BusinessEntityId, QuotaDate }, transaction, commandTimeout);
         }
         #endregion SalesPersonQuotaHistory
 
@@ -3019,6 +5326,28 @@ namespace MyNamespace
                     [SalesReasonID] = @SalesReasonId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesReason]
+                WHERE
+                    [SalesReasonID] = @SalesReasonId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesReason(int SalesReasonId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesReason]
+                WHERE
+                    [SalesReasonID] = @SalesReasonId";
+            this.Execute(cmd, new { SalesReasonId }, transaction, commandTimeout);
+        }
         #endregion SalesReason
 
         #region SalesTaxRate
@@ -3031,6 +5360,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_StateProvinceID_TaxType(SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.StateProvinceId == default(int) && e.TaxType == default(byte))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_StateProvinceID_TaxType(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3072,6 +5423,63 @@ namespace MyNamespace
                     [SalesTaxRateID] = @SalesTaxRateId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTaxRate] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceID] = @StateProvinceId,
+                    [TaxRate] = @TaxRate,
+                    [TaxType] = @TaxType
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_StateProvinceID_TaxType(SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTaxRate] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceID] = @StateProvinceId,
+                    [TaxRate] = @TaxRate,
+                    [TaxType] = @TaxType
+                WHERE
+                    [StateProvinceID] = @StateProvinceId AND
+                    [TaxType] = @TaxType";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesTaxRate e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesTaxRate]
+                WHERE
+                    [SalesTaxRateID] = @SalesTaxRateId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesTaxRate(int SalesTaxRateId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesTaxRate]
+                WHERE
+                    [SalesTaxRateID] = @SalesTaxRateId";
+            this.Execute(cmd, new { SalesTaxRateId }, transaction, commandTimeout);
+        }
         #endregion SalesTaxRate
 
         #region SalesTerritory
@@ -3084,6 +5492,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3134,6 +5564,68 @@ namespace MyNamespace
                     [TerritoryID] = @TerritoryId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTerritory] SET
+                    [CostLastYear] = @CostLastYear,
+                    [CostYTD] = @CostYtd,
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [Group] = @Group,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [SalesLastYear] = @SalesLastYear,
+                    [SalesYTD] = @SalesYtd
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTerritory] SET
+                    [CostLastYear] = @CostLastYear,
+                    [CostYTD] = @CostYtd,
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [Group] = @Group,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [SalesLastYear] = @SalesLastYear,
+                    [SalesYTD] = @SalesYtd
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesTerritory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesTerritory]
+                WHERE
+                    [TerritoryID] = @TerritoryId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesTerritory(int TerritoryId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesTerritory]
+                WHERE
+                    [TerritoryID] = @TerritoryId";
+            this.Execute(cmd, new { TerritoryId }, transaction, commandTimeout);
+        }
         #endregion SalesTerritory
 
         #region SalesTerritoryHistory
@@ -3146,6 +5638,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3189,6 +5692,49 @@ namespace MyNamespace
                     [StartDate] = @StartDate";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SalesTerritoryHistory] SET
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [EndDate] = @EndDate,
+                    [ModifiedDate] = @ModifiedDate,
+                    [StartDate] = @StartDate,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SalesTerritoryHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesTerritoryHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [TerritoryID] = @TerritoryId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSalesTerritoryHistory(int BusinessEntityId, int TerritoryId, DateTime StartDate, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SalesTerritoryHistory]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId AND
+                    [TerritoryID] = @TerritoryId AND
+                    [StartDate] = @StartDate";
+            this.Execute(cmd, new { BusinessEntityId, TerritoryId, StartDate }, transaction, commandTimeout);
+        }
         #endregion SalesTerritoryHistory
 
         #region ScrapReason
@@ -3201,6 +5747,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3233,6 +5790,42 @@ namespace MyNamespace
                     [ScrapReasonID] = @ScrapReasonId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[ScrapReason] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ScrapReason e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ScrapReason]
+                WHERE
+                    [ScrapReasonID] = @ScrapReasonId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteScrapReason(short ScrapReasonId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[ScrapReason]
+                WHERE
+                    [ScrapReasonID] = @ScrapReasonId";
+            this.Execute(cmd, new { ScrapReasonId }, transaction, commandTimeout);
+        }
         #endregion ScrapReason
 
         #region Shift
@@ -3245,6 +5838,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_StartTime_EndTime(Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.StartTime == default(DateTime) && e.EndTime == default(DateTime))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_StartTime_EndTime(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3283,6 +5898,61 @@ namespace MyNamespace
                     [ShiftID] = @ShiftId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Shift] SET
+                    [EndTime] = @EndTime,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StartTime] = @StartTime
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_StartTime_EndTime(Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [HumanResources].[Shift] SET
+                    [EndTime] = @EndTime,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StartTime] = @StartTime
+                WHERE
+                    [StartTime] = @StartTime AND
+                    [EndTime] = @EndTime";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Shift e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[Shift]
+                WHERE
+                    [ShiftID] = @ShiftId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteShift(byte ShiftId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [HumanResources].[Shift]
+                WHERE
+                    [ShiftID] = @ShiftId";
+            this.Execute(cmd, new { ShiftId }, transaction, commandTimeout);
+        }
         #endregion Shift
 
         #region ShipMethod
@@ -3295,6 +5965,28 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3332,6 +6024,60 @@ namespace MyNamespace
                 WHERE
                     [ShipMethodID] = @ShipMethodId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Purchasing].[ShipMethod] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ShipBase] = @ShipBase,
+                    [ShipRate] = @ShipRate
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Purchasing].[ShipMethod] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [ShipBase] = @ShipBase,
+                    [ShipRate] = @ShipRate
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ShipMethod e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[ShipMethod]
+                WHERE
+                    [ShipMethodID] = @ShipMethodId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteShipMethod(int ShipMethodId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[ShipMethod]
+                WHERE
+                    [ShipMethodID] = @ShipMethodId";
+            this.Execute(cmd, new { ShipMethodId }, transaction, commandTimeout);
         }
         #endregion ShipMethod
 
@@ -3386,6 +6132,28 @@ namespace MyNamespace
                     [ShoppingCartItemID] = @ShoppingCartItemId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(ShoppingCartItem e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[ShoppingCartItem]
+                WHERE
+                    [ShoppingCartItemID] = @ShoppingCartItemId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteShoppingCartItem(int ShoppingCartItemId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[ShoppingCartItem]
+                WHERE
+                    [ShoppingCartItemID] = @ShoppingCartItemId";
+            this.Execute(cmd, new { ShoppingCartItemId }, transaction, commandTimeout);
+        }
         #endregion ShoppingCartItem
 
         #region SpecialOffer
@@ -3398,6 +6166,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3451,6 +6230,49 @@ namespace MyNamespace
                     [SpecialOfferID] = @SpecialOfferId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SpecialOffer] SET
+                    [Category] = @Category,
+                    [Description] = @Description,
+                    [DiscountPct] = @DiscountPct,
+                    [EndDate] = @EndDate,
+                    [MaxQty] = @MaxQty,
+                    [MinQty] = @MinQty,
+                    [ModifiedDate] = @ModifiedDate,
+                    [StartDate] = @StartDate,
+                    [Type] = @Type
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SpecialOffer e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SpecialOffer]
+                WHERE
+                    [SpecialOfferID] = @SpecialOfferId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSpecialOffer(int SpecialOfferId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SpecialOffer]
+                WHERE
+                    [SpecialOfferID] = @SpecialOfferId";
+            this.Execute(cmd, new { SpecialOfferId }, transaction, commandTimeout);
+        }
         #endregion SpecialOffer
 
         #region SpecialOfferProduct
@@ -3463,6 +6285,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3499,6 +6332,45 @@ namespace MyNamespace
                     [ProductID] = @ProductId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[SpecialOfferProduct] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [ProductID] = @ProductId,
+                    [SpecialOfferID] = @SpecialOfferId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(SpecialOfferProduct e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SpecialOfferProduct]
+                WHERE
+                    [SpecialOfferID] = @SpecialOfferId AND
+                    [ProductID] = @ProductId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteSpecialOfferProduct(int SpecialOfferId, int ProductId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[SpecialOfferProduct]
+                WHERE
+                    [SpecialOfferID] = @SpecialOfferId AND
+                    [ProductID] = @ProductId";
+            this.Execute(cmd, new { SpecialOfferId, ProductId }, transaction, commandTimeout);
+        }
         #endregion SpecialOfferProduct
 
         #region StateProvince
@@ -3511,6 +6383,39 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_StateProvinceCode_CountryRegionCode(StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.StateProvinceCode == null && e.CountryRegionCode == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_StateProvinceCode_CountryRegionCode(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3555,6 +6460,83 @@ namespace MyNamespace
                     [StateProvinceID] = @StateProvinceId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[StateProvince] SET
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [IsOnlyStateProvinceFlag] = @IsOnlyStateProvinceFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceCode] = @StateProvinceCode,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[StateProvince] SET
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [IsOnlyStateProvinceFlag] = @IsOnlyStateProvinceFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceCode] = @StateProvinceCode,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_StateProvinceCode_CountryRegionCode(StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Person].[StateProvince] SET
+                    [CountryRegionCode] = @CountryRegionCode,
+                    [IsOnlyStateProvinceFlag] = @IsOnlyStateProvinceFlag,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [StateProvinceCode] = @StateProvinceCode,
+                    [TerritoryID] = @TerritoryId
+                WHERE
+                    [StateProvinceCode] = @StateProvinceCode AND
+                    [CountryRegionCode] = @CountryRegionCode";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(StateProvince e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[StateProvince]
+                WHERE
+                    [StateProvinceID] = @StateProvinceId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteStateProvince(int StateProvinceId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Person].[StateProvince]
+                WHERE
+                    [StateProvinceID] = @StateProvinceId";
+            this.Execute(cmd, new { StateProvinceId }, transaction, commandTimeout);
+        }
         #endregion StateProvince
 
         #region Store
@@ -3567,6 +6549,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_rowguid(Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Rowguid == default(Guid))
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_rowguid(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3607,6 +6600,45 @@ namespace MyNamespace
                 WHERE
                     [BusinessEntityID] = @BusinessEntityId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_rowguid(Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Sales].[Store] SET
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [Demographics] = @Demographics,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [SalesPersonID] = @SalesPersonId
+                WHERE
+                    [rowguid] = @Rowguid";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Store e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[Store]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteStore(int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Sales].[Store]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
         }
         #endregion Store
 
@@ -3669,6 +6701,28 @@ namespace MyNamespace
                 WHERE
                     [TransactionID] = @TransactionId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(TransactionHistory e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[TransactionHistory]
+                WHERE
+                    [TransactionID] = @TransactionId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteTransactionHistory(int TransactionId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[TransactionHistory]
+                WHERE
+                    [TransactionID] = @TransactionId";
+            this.Execute(cmd, new { TransactionId }, transaction, commandTimeout);
         }
         #endregion TransactionHistory
 
@@ -3735,6 +6789,28 @@ namespace MyNamespace
                     [TransactionID] = @TransactionId";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(TransactionHistoryArchive e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[TransactionHistoryArchive]
+                WHERE
+                    [TransactionID] = @TransactionId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteTransactionHistoryArchive(int TransactionId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[TransactionHistoryArchive]
+                WHERE
+                    [TransactionID] = @TransactionId";
+            this.Execute(cmd, new { TransactionId }, transaction, commandTimeout);
+        }
         #endregion TransactionHistoryArchive
 
         #region UnitMeasure
@@ -3747,6 +6823,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_Name(UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.Name == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_Name(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3782,6 +6869,43 @@ namespace MyNamespace
                     [UnitMeasureCode] = @UnitMeasureCode";
             this.Execute(cmd, e, transaction, commandTimeout);
         }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_Name(UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Production].[UnitMeasure] SET
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [UnitMeasureCode] = @UnitMeasureCode
+                WHERE
+                    [Name] = @Name";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(UnitMeasure e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[UnitMeasure]
+                WHERE
+                    [UnitMeasureCode] = @UnitMeasureCode";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteUnitMeasure(string UnitMeasureCode, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[UnitMeasure]
+                WHERE
+                    [UnitMeasureCode] = @UnitMeasureCode";
+            this.Execute(cmd, new { UnitMeasureCode }, transaction, commandTimeout);
+        }
         #endregion UnitMeasure
 
         #region Vendor
@@ -3794,6 +6918,17 @@ namespace MyNamespace
                 this.Insert(e, transaction, commandTimeout);
             else
                 this.Update(e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Saves (if new) or Updates (if existing)
+        /// </summary>
+        public virtual void Save_by_AccountNumber(Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            if (e.AccountNumber == null)
+                this.Insert(e, transaction, commandTimeout);
+            else
+                this.Update_by_AccountNumber(e, transaction, commandTimeout);
         }
         /// <summary>
         /// Saves new record
@@ -3843,6 +6978,48 @@ namespace MyNamespace
                 WHERE
                     [BusinessEntityID] = @BusinessEntityId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+
+        /// <summary>
+        /// Updates existing record
+        /// </summary>
+        public virtual void Update_by_AccountNumber(Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                UPDATE [Purchasing].[Vendor] SET
+                    [AccountNumber] = @AccountNumber,
+                    [ActiveFlag] = @ActiveFlag,
+                    [BusinessEntityID] = @BusinessEntityId,
+                    [CreditRating] = @CreditRating,
+                    [ModifiedDate] = @ModifiedDate,
+                    [Name] = @Name,
+                    [PreferredVendorStatus] = @PreferredVendorStatus,
+                    [PurchasingWebServiceURL] = @PurchasingWebServiceUrl
+                WHERE
+                    [AccountNumber] = @AccountNumber";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(Vendor e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[Vendor]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteVendor(int BusinessEntityId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Purchasing].[Vendor]
+                WHERE
+                    [BusinessEntityID] = @BusinessEntityId";
+            this.Execute(cmd, new { BusinessEntityId }, transaction, commandTimeout);
         }
         #endregion Vendor
 
@@ -3905,6 +7082,28 @@ namespace MyNamespace
                 WHERE
                     [WorkOrderID] = @WorkOrderId";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(WorkOrder e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[WorkOrder]
+                WHERE
+                    [WorkOrderID] = @WorkOrderId";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteWorkOrder(int WorkOrderId, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[WorkOrder]
+                WHERE
+                    [WorkOrderID] = @WorkOrderId";
+            this.Execute(cmd, new { WorkOrderId }, transaction, commandTimeout);
         }
         #endregion WorkOrder
 
@@ -3981,6 +7180,32 @@ namespace MyNamespace
                     [ProductID] = @ProductId AND
                     [OperationSequence] = @OperationSequence";
             this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record
+        /// </summary>
+        public virtual void Delete(WorkOrderRouting e, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[WorkOrderRouting]
+                WHERE
+                    [WorkOrderID] = @WorkOrderId AND
+                    [ProductID] = @ProductId AND
+                    [OperationSequence] = @OperationSequence";
+            this.Execute(cmd, e, transaction, commandTimeout);
+        }
+        /// <summary>
+        /// Deletes record by the primary key
+        /// </summary>
+        public virtual void DeleteWorkOrderRouting(int WorkOrderId, int ProductId, short OperationSequence, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            string cmd = @"
+                DELETE FROM [Production].[WorkOrderRouting]
+                WHERE
+                    [WorkOrderID] = @WorkOrderId AND
+                    [ProductID] = @ProductId AND
+                    [OperationSequence] = @OperationSequence";
+            this.Execute(cmd, new { WorkOrderId, ProductId, OperationSequence }, transaction, commandTimeout);
         }
         #endregion WorkOrderRouting
     }

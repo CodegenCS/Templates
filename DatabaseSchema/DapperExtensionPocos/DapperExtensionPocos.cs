@@ -1,4 +1,5 @@
 ﻿using CodegenCS;
+using CodegenCS.Runtime;
 using CodegenCS.Models.DbSchema;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,6 @@ using static CodegenCS.Symbols;
 using static InterpolatedColorConsole.Symbols;
 using System.CommandLine.Binding;
 using System.CommandLine;
-using CodegenCS.Utils;
-using CodegenCS.Runtime;
 
 /// <summary>
 /// DapperExtensionPocos.cs: Given a Database Schema will Generate POCOs with extensions-methods for Insert and Update using Dapper
@@ -38,7 +37,7 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
     private ILogger _logger;
     private bool _allTablesInSameSchema;
     private bool _duplicatedTableNames;
-    private Dictionary<Table, Dictionary<string, string>> _tablePropertyNames { get; set; } = new Dictionary<Table, Dictionary<string, string>>();
+    private static Dictionary<Table, Dictionary<string, string>> _tablePropertyNames;
     private DapperPOCOGeneratorOptions _options;
 
     public DapperPOCOGenerator(ILogger logger, DapperPOCOGeneratorOptions options)
@@ -124,6 +123,7 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
     public void Render(ICodegenContext context, DatabaseSchema schema)
     {
         _generatorContext = context;
+        _tablePropertyNames = new Dictionary<Table, Dictionary<string, string>>();
         _allTablesInSameSchema = schema.Tables.Select(t => t.TableSchema).Distinct().Count() == 1;
         _duplicatedTableNames = schema.Tables.Select(t => t.TableName).GroupBy(name => name).Where(g => g.Count() > 1).Any();
         if (_duplicatedTableNames)
@@ -232,6 +232,7 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             .Where(c => ShouldProcessColumn(table, c))
             .OrderBy(c => c.IsPrimaryKeyMember ? 0 : 1)
             .ThenBy(c => c.IsPrimaryKeyMember ? c.OrdinalPosition : 0) // respect PK order... 
+            .ThenBy(c => table.TableType == "VIEW" ? c.OrdinalPosition : 0) // for views respect the columns order
             .ThenBy(c => GetPropertyNameForDatabaseColumn(table, c.ColumnName)); // but for other columns do alphabetically;
 
 
@@ -389,27 +390,33 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
     private string GetFileNameForTable(Table table)
     {
         //return $"{table.TableName}.generated.cs";
-        // if all tables are under single schema or if it's default schema - just omit the schema:
-        if (_allTablesInSameSchema || table.TableSchema == "dbo")
+        // if default schema or all tables under a single schema then just omit the schema:
+        if (table.TableSchema == "dbo" || _allTablesInSameSchema)
             return $"{table.TableName}.generated.cs";
         else
             return $"{table.TableSchema}.{table.TableName}.generated.cs";
     }
-    private string GetClassNameForTable(Table table)
+    private static string GetClassNameForTable(Table table)
     {
-        // if there are tables under multiple schemas and yet they have identical names - then each class should have unique name:
-        if (!_allTablesInSameSchema && _duplicatedTableNames)
-            return $"{table.TableSchema}_{table.TableName}";
-        else
         return $"{table.TableName}";
+        if (table.TableSchema == "dbo")
+            return $"{table.TableName}";
+        else
+            return $"{table.TableSchema}_{table.TableName}";
     }
     private bool ShouldProcessTable(Table table)
     {
+    	// Convention: "CHECK views" are just for integrity constraints no need to map
+        if (table.TableType == "VIEW" && table.TableName.StartsWith("CK_"))
+            return false;
+        // You may or may not generate POCOs for your views
         if (table.TableType == "VIEW")
+            return false;
+        if (table.TableName == "sysdiagrams")
             return false;
         return true;
     }
-    private bool ShouldProcessColumn(Table table, Column column)
+    private static bool ShouldProcessColumn(Table table, Column column)
     {
         string sqlDataType = column.SqlDataType;
         switch (sqlDataType)
@@ -444,7 +451,7 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
 	    { typeof(void), "void" }
     };
 
-    private Type GetTypeForDatabaseColumn(Table table, Column column)
+    private static Type GetTypeForDatabaseColumn(Table table, Column column)
     {
         System.Type type;
         try
@@ -532,7 +539,7 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
     /// <param name="column"></param>
     /// <param name="previouslyUsedIdentifiers"></param>
     /// <returns></returns>
-    string GetPropertyNameForDatabaseColumn(Table table, string columnName)
+    private static string GetPropertyNameForDatabaseColumn(Table table, string columnName)
     {
         if (columnName == null)
             return null;
@@ -610,9 +617,10 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
 
         var renderTable = (Table table) => (FormattableString)$$"""
                 #region {{GetClassNameForTable(table)}}
-                {{GenerateCrudSave(table)}}
+                {{GenerateCrudSave.WithArguments(table, null)}}
                 {{GenerateCrudInsert(table)}}
-                {{GenerateCrudUpdate(table)}}
+                {{GenerateCrudUpdate.WithArguments(table, _options, null)}}
+                {{GenerateCrudDelete(table)}}
                 #endregion {{GetClassNameForTable(table)}}
                 """;
 
@@ -645,29 +653,59 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             """);
     }
 
-    private FormattableString GenerateCrudSave(Table table)
+    private Action<Table, ICodegenTextWriter> GenerateCrudSave = (table, w) =>
     {
         var pkCols = table.Columns
             .Where(c => ShouldProcessColumn(table, c))
             .Where(c => c.IsPrimaryKeyMember).OrderBy(c => c.OrdinalPosition)
-            .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName), DefaultTypeValue = GetDefaultValue(GetTypeForDatabaseColumn(table, c)) }); ;
+            .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName), DefaultTypeValue = GetDefaultValue(GetTypeForDatabaseColumn(table, c)) });
+        
         if (!pkCols.Any())
-            return $"";
+            return;
+            
         var pkHasNoValue = string.Join(" && ", pkCols.Select(col => "e." + col.PropertyName + " == " + col.DefaultTypeValue));
 
-        return $$"""
+        w.Write($$"""
             /// <summary>
             /// Saves (if new) or Updates (if existing)
             /// </summary>
-            public static void Save(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
+            public static void Save{{GetClassNameForTable(table)}}(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
             {
                 if ({{pkHasNoValue}})
-                    conn.Insert(e, transaction, commandTimeout);
+                    conn.Insert{{GetClassNameForTable(table)}}(e, transaction, commandTimeout);
                 else
-                    conn.Update(e, transaction, commandTimeout);
+                    conn.Update{{GetClassNameForTable(table)}}(e, transaction, commandTimeout);
             }
-            """;
-    }
+            """);
+
+        foreach (var uniqueIndex in table.Indexes.Where(i => i.IsUnique==true && i.IsPrimaryKey == false))
+        {
+            pkCols = uniqueIndex
+                .Columns
+                .OrderBy(col => col.IndexOrdinalPosition)
+                .Select(col => col.ColumnName)
+                .Select(colName => table.Columns.Single(c => c.ColumnName == colName))
+                .Where(c => ShouldProcessColumn(table, c))
+                .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName), DefaultTypeValue = GetDefaultValue(GetTypeForDatabaseColumn(table, c)) });
+            var colNames = string.Join("_", pkCols.Select(col => col.ColumnName));
+            pkHasNoValue = string.Join(" && ", pkCols.Select(col => "e." + col.PropertyName + " == " + col.DefaultTypeValue));
+
+            w.Write($$"""
+
+
+                /// <summary>
+                /// Saves (if new) or Updates (if existing)
+                /// </summary>
+                public static void Save{{GetClassNameForTable(table)}}_by_{{colNames}}(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
+                {
+                    if ({{pkHasNoValue}})
+                        conn.Insert{{GetClassNameForTable(table)}}(e, transaction, commandTimeout);
+                    else
+                        conn.Update{{GetClassNameForTable(table)}}_by_{{colNames}}(e, transaction, commandTimeout);
+                }
+                """);
+        }
+    };
 
     private FormattableString GenerateCrudInsert(Table table)
     {
@@ -677,6 +715,9 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             .Where(c => !c.IsRowGuid) //TODO: should be used only if they have value set (not default value)
             .Where(c => !c.IsComputed) //TODO: should be used only if they have value set (not default value)
             .OrderBy(c => GetPropertyNameForDatabaseColumn(table, c.ColumnName));
+        
+        if (!cols.Any())
+            return $"";
 
         var identityCol = table.Columns
             .Where(c => ShouldProcessColumn(table, c))
@@ -686,7 +727,7 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             /// <summary>
             /// Saves new record
             /// </summary>
-            public static void Insert(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
+            public static void Insert{{GetClassNameForTable(table)}}(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
             {
                 string cmd = @"
                     INSERT INTO {{(table.TableSchema == "dbo" ? $"[{table.TableName}]" : $"[{table.TableSchema}].[{table.TableName}]")}}
@@ -707,7 +748,7 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             """;
     }
 
-    private FormattableString GenerateCrudUpdate(Table table)
+    private Action<Table, DapperPOCOGeneratorOptions, ICodegenTextWriter> GenerateCrudUpdate = (table, _options, w) =>
     {
         var cols = table.Columns
             .Where(c => ShouldProcessColumn(table, c))
@@ -723,11 +764,14 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
             .OrderBy(c => c.OrdinalPosition)
             .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName) });
 
-        return $$"""
+        if (!cols.Any() || !pkCols.Any())
+            return;
+
+        w.Write($$"""
             /// <summary>
             /// Updates existing record
             /// </summary>
-            public static void Update(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
+            public static void Update{{GetClassNameForTable(table)}}(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
             {
                 string cmd = @"
                     UPDATE {{(table.TableSchema == "dbo" ? $"[{table.TableName}]" : $"[{table.TableSchema}].[{table.TableName}]")}} SET
@@ -737,6 +781,76 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
                 conn.Execute(cmd, e, transaction, commandTimeout);{{IF(_options.TrackPropertiesChange)}}
             
                 e.MarkAsClean();{{ENDIF}}
+            }
+            """);
+
+        foreach (var uniqueIndex in table.Indexes.Where(i => i.IsUnique == true && i.IsPrimaryKey == false))
+        {
+            pkCols = uniqueIndex
+                .Columns.OrderBy(col => col.IndexOrdinalPosition)
+                .Select(col => col.ColumnName)
+                .Select(colName => table.Columns.Single(c => c.ColumnName == colName))
+                .Where(c => ShouldProcessColumn(table, c))
+                .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName) });
+            var colNames = string.Join("_", pkCols.Select(col => col.ColumnName));
+
+            w.Write($$"""
+
+
+                /// <summary>
+                /// Updates existing record
+                /// </summary>
+                public static void Update{{GetClassNameForTable(table)}}_by_{{colNames}}(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
+                {
+                    string cmd = @"
+                        UPDATE {{(table.TableSchema == "dbo" ? $"[{table.TableName}]" : $"[{table.TableSchema}].[{table.TableName}]")}} SET
+                            {{cols.Select(col => $"[{col.ColumnName}] = @{col.PropertyName}").Render(RenderEnumerableOptions.MultiLineCSV)}}
+                        WHERE
+                            {{pkCols.Select(col => $"[{col.ColumnName}] = @{col.PropertyName}").Render(RenderEnumerableOptions.CreateWithCustomSeparator(" AND\n", false))}}";
+                    conn.Execute(cmd, e, transaction, commandTimeout);{{IF(_options.TrackPropertiesChange)}}
+                
+                    e.MarkAsClean();{{ENDIF}}
+                }
+                """);
+        }
+
+    };
+
+    private FormattableString GenerateCrudDelete(Table table)
+    {
+        var pkCols = table.Columns
+            .Where(c => ShouldProcessColumn(table, c))
+            .Where(c => c.IsPrimaryKeyMember)
+            .OrderBy(c => c.OrdinalPosition)
+            .Select(c => new { ColumnName = c.ColumnName, PropertyName = GetPropertyNameForDatabaseColumn(table, c.ColumnName), PropertyType = GetTypeDefinitionForDatabaseColumn(table, c) });
+
+        if (!pkCols.Any())
+            return $"";
+
+        return $$"""
+            /// <summary>
+            /// Deletes record
+            /// </summary>
+            public static bool Delete{{GetClassNameForTable(table)}}(this IDbConnection conn, {{GetClassNameForTable(table)}} e, IDbTransaction transaction = null, int? commandTimeout = null)
+            {
+                string cmd = @"
+                    DELETE {{(table.TableSchema == "dbo" ? $"[{table.TableName}]" : $"[{table.TableSchema}].[{table.TableName}]")}}
+                    WHERE
+                        {{pkCols.Select(col => $"[{col.ColumnName}] = @{col.PropertyName}").Render(RenderEnumerableOptions.CreateWithCustomSeparator(" AND\n", false))}}";
+                int deleted = conn.Execute(cmd, e, transaction, commandTimeout);
+                return deleted > 0;
+            }
+            /// <summary>
+            /// Deletes record by the primary key
+            /// </summary>
+            public static bool Delete{{GetClassNameForTable(table)}}(this IDbConnection conn, {{pkCols.Select(col => $"{col.PropertyType} {col.PropertyName}").Render(RenderEnumerableOptions.CreateWithCustomSeparator(", ", false))}}, IDbTransaction transaction = null, int? commandTimeout = null)
+            {
+                string cmd = @"
+                    DELETE {{(table.TableSchema == "dbo" ? $"[{table.TableName}]" : $"[{table.TableSchema}].[{table.TableName}]")}}
+                    WHERE
+                        {{pkCols.Select(col => $"[{col.ColumnName}] = @{col.PropertyName}").Render(RenderEnumerableOptions.CreateWithCustomSeparator(" AND\n", false))}}";
+                int deleted = conn.Execute(cmd, new { {{pkCols.Select(col => col.PropertyName).Render(RenderEnumerableOptions.CreateWithCustomSeparator(", ", false))}} }, transaction, commandTimeout);
+                return deleted > 0;
             }
             """;
     }
