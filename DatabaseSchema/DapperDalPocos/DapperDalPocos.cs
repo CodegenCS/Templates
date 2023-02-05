@@ -305,12 +305,13 @@ public class DapperPOCOGenerator : ICodegenMultifileTemplate<DatabaseSchema>
         if (propertyName.ToLower() != column.ColumnName.ToLower())
             writer.WriteLine($"[Column(\"{column.ColumnName}\")]");
         if (_options.TrackPropertiesChange)
-            writer.Write($@"
-        public {GetTypeDefinitionForDatabaseColumn(table, column) ?? ""} {propertyName} 
-        {{ 
-            get {{ return {privateVariable}; }} 
-            set {{ SetField(ref {privateVariable}, value, nameof({propertyName})); }} 
-        }}");
+            writer.Write($$"""
+                public {{GetTypeDefinitionForDatabaseColumn(table, column) ?? ""}} {{propertyName}}
+                { 
+                    get { return {{privateVariable}}; }
+                    set { SetField(ref {{ privateVariable}}, value, nameof({{propertyName}})); }
+                }
+                """);
         else
             writer.Write($"public {GetTypeDefinitionForDatabaseColumn(table, column) ?? ""} {propertyName} {{ get; set; }}");
     }
