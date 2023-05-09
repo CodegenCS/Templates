@@ -24,6 +24,7 @@ namespace MyNamespace
         public int ProductPhotoId { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public bool Primary { get; set; }
         #endregion Members
 

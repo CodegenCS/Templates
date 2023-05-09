@@ -23,6 +23,7 @@ namespace MyNamespace
         public int IllustrationId { get; set; }
 
         public string Diagram { get; set; }
+
         public DateTime ModifiedDate { get; set; }
         #endregion Members
 

@@ -22,12 +22,19 @@ namespace MyNamespace
         public int BusinessEntityId { get; set; }
 
         public decimal Bonus { get; set; }
+
         public decimal CommissionPct { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public Guid Rowguid { get; set; }
+
         public decimal SalesLastYear { get; set; }
+
         public decimal? SalesQuota { get; set; }
+
         public decimal SalesYtd { get; set; }
+
         public int? TerritoryId { get; set; }
         #endregion Members
 

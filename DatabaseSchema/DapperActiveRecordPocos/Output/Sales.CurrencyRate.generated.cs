@@ -23,10 +23,15 @@ namespace MyNamespace
         public int CurrencyRateId { get; set; }
 
         public decimal AverageRate { get; set; }
+
         public DateTime CurrencyRateDate { get; set; }
+
         public decimal EndOfDayRate { get; set; }
+
         public string FromCurrencyCode { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public string ToCurrencyCode { get; set; }
         #endregion Members
 

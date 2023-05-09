@@ -21,9 +21,13 @@ namespace MyNamespace
         public int BusinessEntityId { get; set; }
 
         public string Demographics { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
+
         public Guid Rowguid { get; set; }
+
         public int? SalesPersonId { get; set; }
         #endregion Members
 

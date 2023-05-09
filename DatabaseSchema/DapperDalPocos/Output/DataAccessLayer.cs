@@ -52,7 +52,7 @@ namespace MyNamespace
             }
         }
         #endregion End of SQL/Dapper
-        
+
         #region Address
         /// <summary>
         /// Saves (if new) or Updates (if existing)

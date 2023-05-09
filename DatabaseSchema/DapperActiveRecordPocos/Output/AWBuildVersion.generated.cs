@@ -25,6 +25,7 @@ namespace MyNamespace
         public string DatabaseVersion { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public DateTime VersionDate { get; set; }
         #endregion Members
 

@@ -21,6 +21,7 @@ namespace MyNamespace
         public string CultureId { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
         #endregion Members
 

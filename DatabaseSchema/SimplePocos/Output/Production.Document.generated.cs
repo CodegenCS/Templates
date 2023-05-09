@@ -18,6 +18,7 @@ namespace MyNamespace
     {
         #region Members
         public int ChangeNumber { get; set; }
+
         [Column("Document")]
         public Byte[] Document1 { get; set; }
 
@@ -25,14 +26,23 @@ namespace MyNamespace
         public short? DocumentLevel { get; set; }
 
         public string DocumentSummary { get; set; }
+
         public string FileExtension { get; set; }
+
         public string FileName { get; set; }
+
         public bool FolderFlag { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public int Owner { get; set; }
+
         public string Revision { get; set; }
+
         public Guid Rowguid { get; set; }
+
         public byte Status { get; set; }
+
         public string Title { get; set; }
         #endregion Members
 

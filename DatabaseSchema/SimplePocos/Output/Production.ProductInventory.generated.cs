@@ -24,9 +24,13 @@ namespace MyNamespace
         public short LocationId { get; set; }
 
         public byte Bin { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public short Quantity { get; set; }
+
         public Guid Rowguid { get; set; }
+
         public string Shelf { get; set; }
         #endregion Members
 

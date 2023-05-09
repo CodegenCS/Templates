@@ -22,13 +22,21 @@ namespace MyNamespace
         public int TerritoryId { get; set; }
 
         public decimal CostLastYear { get; set; }
+
         public decimal CostYtd { get; set; }
+
         public string CountryRegionCode { get; set; }
+
         public string Group { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
+
         public Guid Rowguid { get; set; }
+
         public decimal SalesLastYear { get; set; }
+
         public decimal SalesYtd { get; set; }
         #endregion Members
 

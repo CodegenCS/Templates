@@ -23,8 +23,11 @@ namespace MyNamespace
         public int ProductSubcategoryId { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
+
         public int ProductCategoryId { get; set; }
+
         public Guid Rowguid { get; set; }
         #endregion Members
 

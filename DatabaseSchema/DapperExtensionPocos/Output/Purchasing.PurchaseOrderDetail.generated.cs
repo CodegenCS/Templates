@@ -25,14 +25,20 @@ namespace MyNamespace
         public int PurchaseOrderDetailId { get; set; }
 
         public DateTime DueDate { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public decimal LineTotal { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public short OrderQty { get; set; }
+
         public int ProductId { get; set; }
+
         public decimal ReceivedQty { get; set; }
+
         public decimal RejectedQty { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public decimal StockedQty { get; set; }
 

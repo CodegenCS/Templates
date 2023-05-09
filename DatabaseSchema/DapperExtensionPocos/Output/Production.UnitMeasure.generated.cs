@@ -21,6 +21,7 @@ namespace MyNamespace
         public string UnitMeasureCode { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
         #endregion Members
 

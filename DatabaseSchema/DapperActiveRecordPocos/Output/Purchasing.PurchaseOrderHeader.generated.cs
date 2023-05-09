@@ -23,15 +23,25 @@ namespace MyNamespace
         public int PurchaseOrderId { get; set; }
 
         public int EmployeeId { get; set; }
+
         public decimal Freight { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public DateTime OrderDate { get; set; }
+
         public byte RevisionNumber { get; set; }
+
         public DateTime? ShipDate { get; set; }
+
         public int ShipMethodId { get; set; }
+
         public byte Status { get; set; }
+
         public decimal SubTotal { get; set; }
+
         public decimal TaxAmt { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public decimal TotalDue { get; set; }
 

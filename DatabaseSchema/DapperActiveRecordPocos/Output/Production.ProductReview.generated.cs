@@ -23,11 +23,17 @@ namespace MyNamespace
         public int ProductReviewId { get; set; }
 
         public string Comments { get; set; }
+
         public string EmailAddress { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public int ProductId { get; set; }
+
         public int Rating { get; set; }
+
         public DateTime ReviewDate { get; set; }
+
         public string ReviewerName { get; set; }
         #endregion Members
 

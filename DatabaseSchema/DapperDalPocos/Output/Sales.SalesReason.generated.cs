@@ -22,7 +22,9 @@ namespace MyNamespace
         public int SalesReasonId { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
+
         public string ReasonType { get; set; }
         #endregion Members
 

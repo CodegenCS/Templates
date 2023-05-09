@@ -23,6 +23,7 @@ namespace MyNamespace
         public int PhoneNumberTypeId { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
         #endregion Members
 

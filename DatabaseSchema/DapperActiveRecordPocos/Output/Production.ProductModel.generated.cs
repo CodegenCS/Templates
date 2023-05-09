@@ -23,9 +23,13 @@ namespace MyNamespace
         public int ProductModelId { get; set; }
 
         public string CatalogDescription { get; set; }
+
         public string Instructions { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
+
         public Guid Rowguid { get; set; }
         #endregion Members
 

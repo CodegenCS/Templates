@@ -22,6 +22,7 @@ namespace MyNamespace
         public string CountryRegionCode { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public string Name { get; set; }
         #endregion Members
 

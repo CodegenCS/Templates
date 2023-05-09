@@ -28,13 +28,21 @@ namespace MyNamespace
         public short OperationSequence { get; set; }
 
         public decimal? ActualCost { get; set; }
+
         public DateTime? ActualEndDate { get; set; }
+
         public decimal? ActualResourceHrs { get; set; }
+
         public DateTime? ActualStartDate { get; set; }
+
         public short LocationId { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public decimal PlannedCost { get; set; }
+
         public DateTime ScheduledEndDate { get; set; }
+
         public DateTime ScheduledStartDate { get; set; }
         #endregion Members
 

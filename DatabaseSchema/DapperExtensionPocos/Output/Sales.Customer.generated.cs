@@ -25,9 +25,13 @@ namespace MyNamespace
         public string AccountNumber { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public int? PersonId { get; set; }
+
         public Guid Rowguid { get; set; }
+
         public int? StoreId { get; set; }
+
         public int? TerritoryId { get; set; }
         #endregion Members
 

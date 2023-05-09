@@ -23,7 +23,9 @@ namespace MyNamespace
         public int ProductDescriptionId { get; set; }
 
         public string Description { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public Guid Rowguid { get; set; }
         #endregion Members
 

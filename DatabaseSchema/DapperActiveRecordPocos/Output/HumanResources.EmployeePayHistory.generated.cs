@@ -25,7 +25,9 @@ namespace MyNamespace
         public DateTime RateChangeDate { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public byte PayFrequency { get; set; }
+
         public decimal Rate { get; set; }
         #endregion Members
 

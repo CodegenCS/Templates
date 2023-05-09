@@ -23,12 +23,19 @@ namespace MyNamespace
         public int BillOfMaterialsId { get; set; }
 
         public short BomLevel { get; set; }
+
         public int ComponentId { get; set; }
+
         public DateTime? EndDate { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public decimal PerAssemblyQty { get; set; }
+
         public int? ProductAssemblyId { get; set; }
+
         public DateTime StartDate { get; set; }
+
         public string UnitMeasureCode { get; set; }
         #endregion Members
 

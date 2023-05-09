@@ -22,9 +22,13 @@ namespace MyNamespace
         public int ProductPhotoId { get; set; }
 
         public Byte[] LargePhoto { get; set; }
+
         public string LargePhotoFileName { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public Byte[] ThumbNailPhoto { get; set; }
+
         public string ThumbnailPhotoFileName { get; set; }
         #endregion Members
 

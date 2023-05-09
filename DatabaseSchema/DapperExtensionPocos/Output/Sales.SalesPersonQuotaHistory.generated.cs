@@ -24,7 +24,9 @@ namespace MyNamespace
         public DateTime QuotaDate { get; set; }
 
         public DateTime ModifiedDate { get; set; }
+
         public Guid Rowguid { get; set; }
+
         public decimal SalesQuota { get; set; }
         #endregion Members
 

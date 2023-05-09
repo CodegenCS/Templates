@@ -11,7 +11,7 @@ namespace MyNamespace
             string connectionString = @"Data Source=MYWORKSTATION\\SQLEXPRESS;
                             Initial Catalog=AdventureWorks;
                             Integrated Security=True;";
-            connectionString = @"Server=(local); Database=AdventureWorks2019; Integrated Security=True";
+
             return new SqlConnection(connectionString);
         }
     }

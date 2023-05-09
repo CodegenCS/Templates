@@ -27,7 +27,9 @@ namespace MyNamespace
         public DateTime StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
+
         public DateTime ModifiedDate { get; set; }
+
         public Guid Rowguid { get; set; }
         #endregion Members
 
