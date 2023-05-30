@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCoreGenerator", "EFCoreGenerator.csproj", "{DB767122-72E0-49A3-A7C1-61C157D55C99}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleUsage", "SampleUsage\SampleUsage.csproj", "{F75FE49A-5453-4F8C-B06A-E3444CF8F070}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB767122-72E0-49A3-A7C1-61C157D55C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB767122-72E0-49A3-A7C1-61C157D55C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB767122-72E0-49A3-A7C1-61C157D55C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB767122-72E0-49A3-A7C1-61C157D55C99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F75FE49A-5453-4F8C-B06A-E3444CF8F070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F75FE49A-5453-4F8C-B06A-E3444CF8F070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F75FE49A-5453-4F8C-B06A-E3444CF8F070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F75FE49A-5453-4F8C-B06A-E3444CF8F070}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {94A75B87-22BA-48EA-8EDC-E105B4AA97F6}
+	EndGlobalSection
+EndGlobal
