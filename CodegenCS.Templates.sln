@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleModels", "SampleModel
 		DatabaseSchema\SampleModels\AdventureWorksSchema.json = DatabaseSchema\SampleModels\AdventureWorksSchema.json
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCoreGenerator", "DatabaseSchema\EFCoreGenerator\EFCoreGenerator.csproj", "{6C3F4EB9-1E12-4B0C-ABB0-E5F60E155922}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{D09685BB-C797-4369-9198-51BAD1D54645}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D09685BB-C797-4369-9198-51BAD1D54645}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D09685BB-C797-4369-9198-51BAD1D54645}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C3F4EB9-1E12-4B0C-ABB0-E5F60E155922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C3F4EB9-1E12-4B0C-ABB0-E5F60E155922}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C3F4EB9-1E12-4B0C-ABB0-E5F60E155922}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C3F4EB9-1E12-4B0C-ABB0-E5F60E155922}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{D09685BB-C797-4369-9198-51BAD1D54645} = {01C993D0-1068-43F9-A340-59BD9068139B}
 		{C0E3DC9E-73B1-435C-A0AD-421A119D1B36} = {01C993D0-1068-43F9-A340-59BD9068139B}
 		{9A6564FC-0687-494D-ACF7-98C17B00647E} = {28104C6E-3786-478A-A038-B6F08D58433C}
+		{6C3F4EB9-1E12-4B0C-ABB0-E5F60E155922} = {28104C6E-3786-478A-A038-B6F08D58433C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {94A75B87-22BA-48EA-8EDC-E105B4AA97F6}

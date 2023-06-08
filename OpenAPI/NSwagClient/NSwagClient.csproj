@@ -2,14 +2,16 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+		<!-- Should work with most .NET versions. But currently most developers should probably have net6.0+ installed -->
+		<!--<TargetFrameworks>net472;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>-->
+		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CodegenCS.Core" Version="3.3.0" />
+		<PackageReference Include="CodegenCS.Core" Version="3.3.1" />
 		<PackageReference Include="CodegenCS.Runtime" Version="3.1.1" />
-		<PackageReference Include="CodegenCS.Models.NSwagAdapter" Version="3.0.0" />
+		<PackageReference Include="CodegenCS.Models.NSwagAdapter" Version="3.0.1" />
 	</ItemGroup>
 
 	<!-- Yeah, SampleUsage project is a subfolder - just ignore it -->
